@@ -1,0 +1,2869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Restaurant POS · MMK · Analytics</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #1e293b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 12px;
+        }
+
+        .pos-app {
+            max-width: 1500px;
+            width: 100%;
+            background: #f1f5f9;
+            border-radius: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: 92vh;
+            min-height: 680px;
+        }
+
+        /* TOP BAR */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-icon {
+            background: #f1f5f9;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.15s;
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .btn-icon:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-icon.primary-action {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .btn-icon.primary-action:hover {
+            background: #2563eb;
+        }
+
+        .badge {
+            background: #3b82f6;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 7px;
+            border-radius: 30px;
+            font-weight: 700;
+            margin-left: 4px;
+        }
+
+        /* MAIN GRID */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* MENU PANEL */
+        .menu-panel {
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 16px;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 10px;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .cat-btn {
+            background: #f1f5f9;
+            border: none;
+            border-radius: 30px;
+            padding: 7px 16px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: #334155;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid transparent;
+        }
+
+        .cat-btn.active {
+            background: #0f172a;
+            color: white;
+            border-color: #0f172a;
+        }
+
+        .cat-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .menu-filter-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            user-select: none;
+            border: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .menu-filter-toggle input {
+            cursor: pointer;
+            accent-color: #3b82f6;
+        }
+
+        .menu-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+        }
+
+        .menu-item {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 12px;
+            transition: all 0.12s;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            position: relative;
+        }
+
+        .menu-item:hover:not(.unavailable) {
+            border-color: #94a3b8;
+            background: #f8fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+        }
+
+        .menu-item:active:not(.unavailable) {
+            transform: scale(0.97);
+        }
+
+        .menu-item.unavailable {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            cursor: not-allowed;
+            opacity: 0.75;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-item.unavailable .item-name,
+        .menu-item.unavailable .item-price,
+        .menu-item.unavailable .item-original,
+        .menu-item.unavailable .item-cat {
+            filter: grayscale(0.7);
+            color: #94a3b8;
+        }
+
+        .menu-item.unavailable .item-price {
+            color: #94a3b8;
+        }
+
+        .unavailable-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            background: #dc2626;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            z-index: 2;
+            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.4);
+            white-space: nowrap;
+        }
+
+        .menu-item.unavailable::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 8px,
+                rgba(220, 38, 38, 0.04) 8px,
+                rgba(220, 38, 38, 0.04) 16px
+            );
+            border-radius: 18px;
+            pointer-events: none;
+        }
+
+        .item-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #0f172a;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .item-price {
+            color: #3b82f6;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .item-original {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            text-decoration: line-through;
+            margin-top: 2px;
+        }
+
+        .item-cat {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .item-discount-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #f59e0b;
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 7px;
+            border-radius: 20px;
+            font-weight: 700;
+            z-index: 3;
+        }
+
+        .item-unavailable-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #dc2626;
+            color: white;
+            font-size: 0.6rem;
+            padding: 2px 7px;
+            border-radius: 20px;
+            font-weight: 700;
+            z-index: 3;
+            text-transform: uppercase;
+        }
+
+        /* ORDER PANEL */
+        .order-panel {
+            background: #f8fafc;
+            border-left: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 16px;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 6px;
+        }
+
+        .table-btn {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 7px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #0f172a;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.12s;
+        }
+
+        .table-btn:hover {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+        }
+
+        .item-count-badge {
+            font-size: 0.75rem;
+            background: #e2e8f0;
+            padding: 3px 10px;
+            border-radius: 30px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .order-list {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-right: 4px;
+            min-height: 80px;
+        }
+
+        .empty-order {
+            color: #94a3b8;
+            text-align: center;
+            padding: 30px 0;
+            font-style: italic;
+            border: 2px dashed #e2e8f0;
+            border-radius: 18px;
+            font-size: 0.9rem;
+        }
+
+        .order-line {
+            background: white;
+            border-radius: 14px;
+            padding: 8px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            border: 1px solid #e9eef3;
+            gap: 6px;
+        }
+
+        .line-left {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .line-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #0f172a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .line-price {
+            font-size: 0.75rem;
+            color: #3b82f6;
+            font-weight: 500;
+        }
+
+        .line-discount-tag {
+            font-size: 0.65rem;
+            color: #b45309;
+            background: #fef9c3;
+            padding: 1px 5px;
+            border-radius: 10px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 1px;
+        }
+
+        .line-unavailable-warn {
+            font-size: 0.65rem;
+            color: #dc2626;
+            background: #fee2e2;
+            padding: 1px 5px;
+            border-radius: 10px;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 1px;
+        }
+
+        .line-controls {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .qty-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .qty-btn:hover {
+            background: #eef2f6;
+            border-color: #94a3b8;
+        }
+
+        .qty-val {
+            min-width: 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .line-icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 2px 4px;
+            opacity: 0.6;
+            transition: 0.1s;
+            border-radius: 4px;
+        }
+
+        .line-icon-btn:hover {
+            opacity: 1;
+            background: #f1f5f9;
+        }
+
+        .line-icon-btn.remove { color: #ef4444; }
+
+        .order-summary {
+            border-top: 1px solid #d1d9e6;
+            padding-top: 12px;
+            margin-top: 4px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #334155;
+            margin-bottom: 5px;
+        }
+
+        .summary-row.total {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: #0f172a;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px dashed #cbd5e1;
+        }
+
+        .summary-row.total span:last-child { color: #3b82f6; }
+        .summary-row .discount-text { color: #d97706; }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            border: none;
+            border-radius: 14px;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: white;
+            flex: 1;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 6px 14px rgba(59, 130, 246, 0.25);
+            min-width: 90px;
+        }
+
+        .btn-primary:hover:not(:disabled) { background: #2563eb; transform: scale(1.01); }
+        .btn-primary:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; }
+
+        .btn-secondary {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 12px 14px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1e293b;
+            cursor: pointer;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            min-width: 80px;
+        }
+
+        .btn-secondary:hover:not(:disabled) { background: #f1f5f9; }
+        .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-hold {
+            background: #f59e0b;
+            border: none;
+            border-radius: 14px;
+            padding: 12px 14px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+            cursor: pointer;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 6px 14px rgba(245, 158, 11, 0.25);
+            min-width: 80px;
+        }
+
+        .btn-hold:hover:not(:disabled) { background: #d97706; }
+        .btn-hold:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+
+        .modal-overlay.show { display: flex; }
+
+        .modal-card {
+            background: white;
+            border-radius: 24px;
+            max-width: 580px;
+            width: 100%;
+            max-height: 88vh;
+            overflow-y: auto;
+            padding: 24px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-card.wide { max-width: 1000px; }
+        .modal-card.xwide { max-width: 1200px; }
+
+        .modal-card h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 16px 0 8px;
+            color: #334155;
+        }
+
+        .setting-group { margin-bottom: 16px; }
+
+        .setting-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .setting-group input,
+        .setting-group select {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            font-size: 0.95rem;
+            background: #f8fafc;
+        }
+
+        .setting-group input:focus,
+        .setting-group select:focus {
+            outline: 2px solid #3b82f6;
+            border-color: transparent;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 13px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-save { background: #3b82f6; color: white; }
+        .btn-save:hover { background: #2563eb; }
+        .btn-cancel { background: #e2e8f0; color: #1e293b; }
+        .btn-cancel:hover { background: #cbd5e1; }
+
+        /* TABLE GRID */
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .table-tile {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px 8px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #0f172a;
+            cursor: pointer;
+            transition: 0.12s;
+        }
+
+        .table-tile:hover {
+            background: #e0f2fe;
+            border-color: #38bdf8;
+            transform: scale(1.03);
+        }
+
+        .table-tile.selected {
+            background: #3b82f6;
+            color: white;
+            border-color: #2563eb;
+            box-shadow: 0 6px 14px rgba(59, 130, 246, 0.3);
+        }
+
+        .table-tile.occupied {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        .table-tile.occupied.selected {
+            background: #f59e0b;
+            color: white;
+            border-color: #d97706;
+        }
+
+        .table-tile-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            display: block;
+            margin-top: 2px;
+            font-weight: 500;
+            opacity: 0.7;
+        }
+
+        /* PAYMENT MODAL */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .payment-method {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.12s;
+        }
+
+        .payment-method:hover {
+            background: #e0f2fe;
+            border-color: #38bdf8;
+        }
+
+        .payment-method.selected {
+            background: #3b82f6;
+            color: white;
+            border-color: #2563eb;
+            box-shadow: 0 6px 14px rgba(59, 130, 246, 0.3);
+        }
+
+        .payment-method-icon { font-size: 2rem; display: block; margin-bottom: 6px; }
+        .payment-method-label { font-weight: 600; font-size: 0.95rem; }
+
+        .amount-display {
+            background: #f1f5f9;
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .amount-display .label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 600; }
+        .amount-display .value { font-size: 1.8rem; font-weight: 700; color: #0f172a; margin-top: 4px; }
+
+        .cash-input-group {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .cash-quick {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .cash-quick:hover { background: #e2e8f0; }
+
+        .change-display {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 14px;
+            padding: 14px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .change-display .label { font-size: 0.8rem; color: #047857; text-transform: uppercase; font-weight: 600; }
+        .change-display .value { font-size: 1.5rem; font-weight: 700; color: #065f46; margin-top: 2px; }
+
+        /* HISTORY */
+        .history-day-header {
+            background: #0f172a;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 12px;
+            margin: 12px 0 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .history-day-header:first-child { margin-top: 0; }
+
+        .history-day-total {
+            background: rgba(255,255,255,0.15);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .history-table th {
+            text-align: left;
+            padding: 8px 6px;
+            border-bottom: 2px solid #e2e8f0;
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .history-table td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #0f172a;
+            vertical-align: top;
+        }
+
+        .history-table tr:hover { background: #f8fafc; }
+
+        .payment-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .payment-tag.cash { background: #d1fae5; color: #065f46; }
+        .payment-tag.card { background: #dbeafe; color: #1e40af; }
+
+        /* HELD ORDERS */
+        .held-order-card {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            transition: 0.12s;
+        }
+
+        .held-order-card:hover { background: #fef3c7; border-color: #f59e0b; }
+        .held-order-info { flex: 1; }
+        .held-order-table { font-weight: 700; font-size: 1rem; color: #92400e; margin-bottom: 4px; }
+        .held-order-meta { font-size: 0.8rem; color: #78350f; }
+        .held-order-total { font-weight: 700; font-size: 1rem; color: #3b82f6; white-space: nowrap; }
+        .held-order-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+        .btn-resume {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .btn-resume:hover { background: #2563eb; }
+
+        /* EDIT MENU ROW */
+        .edit-item-row {
+            display: grid;
+            grid-template-columns: 1.6fr 0.8fr 0.9fr 0.7fr 0.7fr 0.6fr auto;
+            gap: 6px;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 8px;
+            transition: 0.12s;
+        }
+
+        .edit-item-row.unavailable-row {
+            background: #fef2f2;
+            border-color: #fca5a5;
+        }
+
+        .edit-item-row input,
+        .edit-item-row select {
+            padding: 7px 8px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            font-size: 0.78rem;
+            min-width: 0;
+            background: white;
+        }
+
+        .edit-item-row input.disc-amt {
+            border-color: #fde68a;
+            background: #fffbeb;
+        }
+        .edit-item-row input.disc-pct {
+            border-color: #a7f3d0;
+            background: #ecfdf5;
+        }
+        .edit-item-row select { cursor: pointer; }
+
+        .avail-toggle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .avail-toggle input {
+            width: auto;
+            cursor: pointer;
+            accent-color: #059669;
+            transform: scale(1.15);
+        }
+
+        .avail-toggle .avail-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 0.5px;
+        }
+
+        .avail-toggle input:not(:checked) ~ .avail-label {
+            color: #dc2626;
+        }
+
+        /* ANALYTICS DASHBOARD */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .analytics-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .analytics-card h3 {
+            margin: 0 0 12px 0;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #334155;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .analytics-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .kpi-tile {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .kpi-tile .kpi-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .kpi-tile .kpi-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .kpi-tile .kpi-value.blue { color: #3b82f6; }
+        .kpi-tile .kpi-value.green { color: #059669; }
+        .kpi-tile .kpi-value.orange { color: #d97706; }
+        .kpi-tile .kpi-value.purple { color: #7c3aed; }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 180px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .bar-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            height: 100%;
+            justify-content: flex-end;
+        }
+
+        .bar {
+            width: 100%;
+            max-width: 40px;
+            background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 6px 6px 0 0;
+            min-height: 2px;
+            transition: 0.2s;
+            position: relative;
+        }
+
+        .bar:hover {
+            background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
+        }
+
+        .bar-value {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: #334155;
+            white-space: nowrap;
+        }
+
+        .bar-label {
+            font-size: 0.65rem;
+            color: #64748b;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            text-align: center;
+        }
+
+        .top-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .top-item-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top-item-rank {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .top-item-row:nth-child(1) .top-item-rank { background: #fbbf24; color: #78350f; }
+        .top-item-row:nth-child(2) .top-item-rank { background: #cbd5e1; color: #334155; }
+        .top-item-row:nth-child(3) .top-item-rank { background: #fcd34d; color: #78350f; }
+
+        .top-item-name {
+            flex: 1;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #0f172a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .top-item-bar {
+            flex: 2;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .top-item-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
+            border-radius: 10px;
+        }
+
+        .top-item-value {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #3b82f6;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .category-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .category-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+        }
+
+        .category-name {
+            flex: 1;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .category-bar {
+            flex: 2;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .category-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+            border-radius: 10px;
+        }
+
+        .category-value {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #d97706;
+            white-space: nowrap;
+        }
+
+        .empty-analytics {
+            text-align: center;
+            padding: 40px 20px;
+            color: #94a3b8;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            white-space: nowrap;
+            max-width: 90vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .toast.show { opacity: 1; }
+        .toast.error { background: #dc2626; }
+        .toast.success { background: #059669; }
+        .toast.warn { background: #d97706; }
+
+        /* SCROLLBARS */
+        .menu-scroll::-webkit-scrollbar,
+        .order-list::-webkit-scrollbar,
+        .modal-card::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .menu-scroll::-webkit-scrollbar-thumb,
+        .order-list::-webkit-scrollbar-thumb,
+        .modal-card::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .pos-app {
+                height: auto;
+                min-height: 100vh;
+                border-radius: 0;
+                max-width: 100%;
+            }
+            .main-grid {
+                grid-template-columns: 1fr;
+                overflow: visible;
+            }
+            .menu-panel {
+                border-radius: 0;
+                max-height: 50vh;
+            }
+            .order-panel {
+                border-left: none;
+                border-top: 1px solid #e2e8f0;
+            }
+            .order-list { max-height: 200px; }
+            body { padding: 0; background: #f1f5f9; }
+            .analytics-grid { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .edit-item-row {
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-rows: auto auto auto;
+            }
+            .edit-item-row input.name-input { grid-column: 1 / -1; }
+        }
+
+        @media (max-width: 480px) {
+            .menu-grid { grid-template-columns: repeat(2, 1fr); }
+            .top-actions .btn-icon span:not(.badge) { display: none; }
+            .btn-icon { padding: 8px 12px; }
+            .table-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+<div class="pos-app">
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="logo">
+            <span>🍽️</span> Myitkyina Thu <span style="font-weight:400;font-size:0.8rem;color:#64748b;"> </span>
+        </div>
+        <div class="top-actions">
+            <button class="btn-icon" id="heldOrdersBtn" title="Held Orders">⏸️ <span>Held</span> <span class="badge" id="heldCountBadge">0</span></button>
+            <button class="btn-icon" id="historyBtn" title="Sales History">📊 <span>History</span></button>
+            <button class="btn-icon" id="analyticsBtn" title="Sales Analytics">📈 <span>Analytics</span></button>
+            <button class="btn-icon" id="editMenuBtn" title="Edit Menu">✏️ <span>Menu</span></button>
+            <button class="btn-icon" id="settingsBtn" title="Settings">⚙️ <span>Settings</span></button>
+        </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="main-grid">
+        <!-- MENU PANEL -->
+        <div class="menu-panel">
+            <div class="menu-header">
+                <div class="category-tabs" id="categoryTabs"></div>
+                <label class="menu-filter-toggle" title="Hide unavailable items">
+                    <input type="checkbox" id="hideUnavailableToggle">
+                    <span>Hide N/A</span>
+                </label>
+            </div>
+            <div class="menu-scroll">
+                <div class="menu-grid" id="menuGrid"></div>
+            </div>
+        </div>
+
+        <!-- ORDER PANEL -->
+        <div class="order-panel">
+            <div class="order-header">
+                <button class="table-btn" id="tableSelectBtn">🪑 <span id="currentTableLabel">Table 1</span></button>
+                <span class="item-count-badge" id="itemCountBadge">0 items</span>
+            </div>
+            <div class="order-list" id="orderList"></div>
+            <div class="order-summary" id="orderSummary">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotalDisplay">0 Ks</span>
+                </div>
+                <div class="summary-row" id="discountRow" style="display:none;">
+                    <span>Item discounts</span>
+                    <span id="discountDisplay" class="discount-text">-0 Ks</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tax (<span id="taxRateLabel">5</span>%)</span>
+                    <span id="taxDisplay">0 Ks</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span id="totalDisplay">0 Ks</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn-hold" id="holdBtn" disabled>⏸️ Hold</button>
+                <button class="btn-secondary" id="printBtn" disabled>🖨️</button>
+                <button class="btn-primary" id="chargeBtn" disabled>💳 Charge</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TABLE SELECTION MODAL -->
+<div class="modal-overlay" id="tableSelectModal">
+    <div class="modal-card" style="max-width:480px;">
+        <h2>🪑 Select Table</h2>
+        <p style="color:#64748b;font-size:0.85rem;margin-bottom:16px;">Choose a table for this order. Orange tables are currently held and unavailable.</p>
+        <div class="table-grid" id="tableGrid"></div>
+        <div class="modal-actions" style="margin-top:20px;">
+            <button class="btn-cancel" id="cancelTableSelect">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay" id="paymentModal">
+    <div class="modal-card" style="max-width:440px;">
+        <h2>💳 Payment</h2>
+        <div class="amount-display">
+            <div class="label">Amount due</div>
+            <div class="value" id="paymentAmountDue">0 Ks</div>
+        </div>
+
+        <h3>Payment method</h3>
+        <div class="payment-methods">
+            <div class="payment-method" data-method="cash">
+                <span class="payment-method-icon">💵</span>
+                <span class="payment-method-label">Cash</span>
+            </div>
+            <div class="payment-method" data-method="card">
+                <span class="payment-method-icon">💳</span>
+                <span class="payment-method-label">Card</span>
+            </div>
+        </div>
+
+        <div id="cashSection" style="display:none;">
+            <h3>Cash received (MMK)</h3>
+            <div class="setting-group">
+                <input type="number" id="cashReceivedInput" placeholder="0" min="0" step="50" value="">
+            </div>
+            <div class="cash-input-group" id="cashQuickGroup"></div>
+            <div class="change-display" id="changeDisplay" style="display:none;">
+                <div class="label">Change</div>
+                <div class="value" id="changeValue">0 Ks</div>
+            </div>
+        </div>
+
+        <div id="cardSection" style="display:none;">
+            <div style="background:#dbeafe;border:1px solid #93c5fd;border-radius:14px;padding:16px;text-align:center;color:#1e40af;font-weight:500;font-size:0.9rem;">
+                💳 Process payment on card terminal
+            </div>
+        </div>
+
+        <div class="modal-actions" style="margin-top:20px;">
+            <button class="btn-cancel" id="cancelPayment">Cancel</button>
+            <button class="btn-save" id="confirmPayment" disabled>Confirm Payment</button>
+        </div>
+    </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+        <h2>⚙️ Settings</h2>
+        <div class="setting-group">
+            <label>Tax rate (%)</label>
+            <input type="number" id="taxRateInput" value="5" min="0" max="30" step="0.5">
+        </div>
+        <div class="setting-group">
+            <label>Restaurant Name</label>
+            <input type="text" id="restaurantNameInput" value="Restaurant POS">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" id="cancelSettings">Cancel</button>
+            <button class="btn-save" id="saveSettings">Save settings</button>
+        </div>
+    </div>
+</div>
+
+<!-- SALES HISTORY MODAL (with Export Excel) -->
+<div class="modal-overlay" id="historyModal">
+    <div class="modal-card xwide">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px;">
+            <h2 style="margin:0;">📊 Sales History</h2>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn-icon primary-action" id="exportExcelBtn" title="Export to Excel">📥 Export Excel</button>
+                <button class="btn-icon" id="clearHistoryBtn" style="background:#fef2f2;border-color:#fecaca;color:#b91c1c;">🗑️ Clear</button>
+            </div>
+        </div>
+        <div style="max-height:480px; overflow-y:auto; padding-right:4px;" id="historyContent">
+            <p style="color:#94a3b8;text-align:center;padding:30px;">No sales yet</p>
+        </div>
+        <div class="modal-actions" style="margin-top:20px;">
+            <button class="btn-save" id="closeHistory">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- ANALYTICS MODAL -->
+<div class="modal-overlay" id="analyticsModal">
+    <div class="modal-card xwide">
+        <h2>📈 Sales Analytics</h2>
+        <div id="analyticsContent">
+            <p style="color:#94a3b8;text-align:center;padding:30px;">No data yet</p>
+        </div>
+        <div class="modal-actions" style="margin-top:20px;">
+            <button class="btn-save" id="closeAnalytics">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- HELD ORDERS MODAL -->
+<div class="modal-overlay" id="heldOrdersModal">
+    <div class="modal-card" style="max-width:600px;">
+        <h2>⏸️ Held Orders</h2>
+        <div id="heldOrdersList" style="max-height:420px; overflow-y:auto;">
+            <p style="color:#94a3b8;text-align:center;padding:30px;">No held orders</p>
+        </div>
+        <div class="modal-actions" style="margin-top:20px;">
+            <button class="btn-save" id="closeHeldOrders">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT MENU MODAL -->
+<div class="modal-overlay" id="editMenuModal">
+    <div class="modal-card xwide">
+        <h2>✏️ Edit Menu Items</h2>
+        <p style="color:#64748b;font-size:0.85rem;margin-bottom:12px;">
+            Set discounts and mark items as unavailable when sold out. Unavailable items cannot be added to orders.
+        </p>
+        <div style="max-height:440px; overflow-y:auto; padding-right:4px;" id="editMenuList"></div>
+        <div style="margin-top:12px;">
+            <button class="btn-secondary" id="addMenuItemBtn" style="width:100%;">+ Add New Item</button>
+        </div>
+        <div class="modal-actions" style="margin-top:16px;">
+            <button class="btn-cancel" id="cancelEditMenu">Cancel</button>
+            <button class="btn-save" id="saveEditMenu">Save Menu</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+    (function() {
+        // ==================== STORAGE KEYS ====================
+        const STORAGE_KEYS = {
+            MENU: 'pos_mmk_menu_v5',
+            SETTINGS: 'pos_mmk_settings_v5',
+            HISTORY: 'pos_mmk_history_v5',
+            HELD: 'pos_mmk_held_v5',
+            NEXT_HELD_ID: 'pos_mmk_next_held_id_v5',
+            CURRENT_TABLE: 'pos_mmk_current_table_v5',
+            HIDE_UNAVAILABLE: 'pos_mmk_hide_unavail_v5'
+        };
+
+        // ==================== DEFAULT DATA ====================
+        const DEFAULT_MENU = [
+            { id: 1, name: 'Mohinga', price: 2500, category: 'Main', discountAmount: 0, discountPercent: 0, available: true },
+            { id: 2, name: 'Shan Noodles', price: 3000, category: 'Main', discountAmount: 0, discountPercent: 0, available: true },
+            { id: 3, name: 'Fried Rice', price: 3500, category: 'Main', discountAmount: 0, discountPercent: 0, available: true },
+            { id: 4, name: 'Chicken Curry', price: 5000, category: 'Main', discountAmount: 0, discountPercent: 0, available: true },
+            { id: 5, name: 'Pork Curry', price: 5500, category: 'Main', discountAmount: 0, discountPercent: 0, available: true },
+            { id: 6, name: 'Laphet Thoke', price: 2000, category: 'Salad', discountAmount: 0, discountPercent: 0, available: true },
+            { id: 7, name: 'Ginger Salad', price: 1800, category: 'Salad', discountAmount: 0, discountPercent: 0, available: true },
+            { id: 8, name: 'Spring Rolls', price: 1500, category: 'Sides', discountAmount: 0, discountPercent: 0, available: true },
+            { id: 9, name: 'Samosa', price: 1200, category: 'Sides', discountAmount: 0, discountPercent: 0, available: true },
+            { id: 10, name: 'Paratha', price: 1000, category: 'Sides', discountAmount: 0, discountPercent: 0, available: true },
+            { id: 11, name: 'Mont Lin Ma Yar', price: 1500, category: 'Snacks', discountAmount: 0, discountPercent: 0, available: true },
+            { id: 12, name: 'Bein Mont', price: 1000, category: 'Snacks', discountAmount: 0, discountPercent: 0, available: true },
+            { id: 13, name: 'Myanmar Tea', price: 800, category: 'Drinks', discountAmount: 0, discountPercent: 0, available: true },
+            { id: 14, name: 'Coffee', price: 1200, category: 'Drinks', discountAmount: 0, discountPercent: 0, available: true },
+            { id: 15, name: 'Fresh Juice', price: 1500, category: 'Drinks', discountAmount: 0, discountPercent: 0, available: true },
+            { id: 16, name: 'Coconut Water', price: 1000, category: 'Drinks', discountAmount: 0, discountPercent: 0, available: true },
+            { id: 17, name: 'Bottle Water', price: 500, category: 'Drinks', discountAmount: 0, discountPercent: 0, available: true }
+        ];
+
+        const DEFAULT_SETTINGS = {
+            taxRate: 5,
+            restaurantName: 'Restaurant POS'
+        };
+
+        const DEFAULT_CATEGORIES = ['Main', 'Salad', 'Sides', 'Snacks', 'Drinks', 'Dessert', 'Other'];
+        const CASH_QUICK_AMOUNTS = [50, 100, 200, 500, 1000, 2000, 5000, 10000];
+
+        // ==================== STORAGE HELPERS ====================
+        function loadFromStorage(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (raw === null) return fallback;
+                return JSON.parse(raw);
+            } catch (e) {
+                console.warn('Storage load failed:', key, e);
+                return fallback;
+            }
+        }
+
+        function saveToStorage(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (e) {
+                console.warn('Storage save failed:', key, e);
+            }
+        }
+
+        // ==================== STATE ====================
+        let MENU_ITEMS = loadFromStorage(STORAGE_KEYS.MENU, DEFAULT_MENU);
+        let settings = loadFromStorage(STORAGE_KEYS.SETTINGS, DEFAULT_SETTINGS);
+        let salesHistory = loadFromStorage(STORAGE_KEYS.HISTORY, []);
+        let heldOrders = loadFromStorage(STORAGE_KEYS.HELD, []);
+        let nextHeldId = loadFromStorage(STORAGE_KEYS.NEXT_HELD_ID, 1);
+        let currentTable = loadFromStorage(STORAGE_KEYS.CURRENT_TABLE, 1);
+        let hideUnavailable = loadFromStorage(STORAGE_KEYS.HIDE_UNAVAILABLE, false);
+        let order = [];
+        let currentCategory = 'All';
+        let toastTimeout = null;
+        let tempMenuItems = [];
+        let tempCategories = [];
+        let selectedPaymentMethod = null;
+
+        MENU_ITEMS = MENU_ITEMS.map(item => ({
+            ...item,
+            discountAmount: item.discountAmount || 0,
+            discountPercent: item.discountPercent || 0,
+            available: item.available !== false
+        }));
+
+        if (!settings.taxRate && settings.taxRate !== 0) settings.taxRate = 5;
+        if (!settings.restaurantName) settings.restaurantName = 'Restaurant POS';
+
+        // ==================== DOM REFS ====================
+        const menuGrid = document.getElementById('menuGrid');
+        const categoryTabs = document.getElementById('categoryTabs');
+        const hideUnavailableToggle = document.getElementById('hideUnavailableToggle');
+        const orderList = document.getElementById('orderList');
+        const subtotalDisplay = document.getElementById('subtotalDisplay');
+        const discountRow = document.getElementById('discountRow');
+        const discountDisplay = document.getElementById('discountDisplay');
+        const taxDisplay = document.getElementById('taxDisplay');
+        const totalDisplay = document.getElementById('totalDisplay');
+        const taxRateLabel = document.getElementById('taxRateLabel');
+        const chargeBtn = document.getElementById('chargeBtn');
+        const printBtn = document.getElementById('printBtn');
+        const holdBtn = document.getElementById('holdBtn');
+        const itemCountBadge = document.getElementById('itemCountBadge');
+        const currentTableLabel = document.getElementById('currentTableLabel');
+        const tableSelectBtn = document.getElementById('tableSelectBtn');
+        const historyBtn = document.getElementById('historyBtn');
+        const analyticsBtn = document.getElementById('analyticsBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const heldOrdersBtn = document.getElementById('heldOrdersBtn');
+        const heldCountBadge = document.getElementById('heldCountBadge');
+        const editMenuBtn = document.getElementById('editMenuBtn');
+
+        const tableSelectModal = document.getElementById('tableSelectModal');
+        const paymentModal = document.getElementById('paymentModal');
+        const settingsModal = document.getElementById('settingsModal');
+        const historyModal = document.getElementById('historyModal');
+        const analyticsModal = document.getElementById('analyticsModal');
+        const heldOrdersModal = document.getElementById('heldOrdersModal');
+        const editMenuModal = document.getElementById('editMenuModal');
+
+        const tableGrid = document.getElementById('tableGrid');
+        const cancelTableSelectBtn = document.getElementById('cancelTableSelect');
+
+        const paymentAmountDue = document.getElementById('paymentAmountDue');
+        const cashSection = document.getElementById('cashSection');
+        const cardSection = document.getElementById('cardSection');
+        const cashReceivedInput = document.getElementById('cashReceivedInput');
+        const changeDisplay = document.getElementById('changeDisplay');
+        const changeValue = document.getElementById('changeValue');
+        const confirmPaymentBtn = document.getElementById('confirmPayment');
+        const cancelPaymentBtn = document.getElementById('cancelPayment');
+        const cashQuickGroup = document.getElementById('cashQuickGroup');
+
+        const taxRateInput = document.getElementById('taxRateInput');
+        const restaurantNameInput = document.getElementById('restaurantNameInput');
+        const saveSettingsBtn = document.getElementById('saveSettings');
+        const cancelSettingsBtn = document.getElementById('cancelSettings');
+
+        const historyContent = document.getElementById('historyContent');
+        const closeHistoryBtn = document.getElementById('closeHistory');
+        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+        const exportExcelBtn = document.getElementById('exportExcelBtn');
+
+        const analyticsContent = document.getElementById('analyticsContent');
+        const closeAnalyticsBtn = document.getElementById('closeAnalytics');
+
+        const heldOrdersList = document.getElementById('heldOrdersList');
+        const closeHeldOrdersBtn = document.getElementById('closeHeldOrders');
+
+        const editMenuList = document.getElementById('editMenuList');
+        const addMenuItemBtn = document.getElementById('addMenuItemBtn');
+        const cancelEditMenuBtn = document.getElementById('cancelEditMenu');
+        const saveEditMenuBtn = document.getElementById('saveEditMenu');
+
+        const toast = document.getElementById('toast');
+
+        // ==================== UTILITIES ====================
+        function showToast(msg, type = 'default', duration = 2400) {
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toast.textContent = msg;
+            toast.classList.remove('error', 'success', 'warn');
+            if (type === 'error') toast.classList.add('error');
+            else if (type === 'success') toast.classList.add('success');
+            else if (type === 'warn') toast.classList.add('warn');
+            toast.classList.add('show');
+            toastTimeout = setTimeout(() => toast.classList.remove('show'), duration);
+        }
+
+        function formatMoney(v) {
+            return Math.round(v).toLocaleString('en-US') + ' Ks';
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[c]);
+        }
+
+        function getEffectivePrice(menuItem) {
+            let price = menuItem.price;
+            if (menuItem.discountAmount > 0) price -= menuItem.discountAmount;
+            if (menuItem.discountPercent > 0) price -= price * (menuItem.discountPercent / 100);
+            return Math.max(0, Math.round(price));
+        }
+
+        // ==================== TOTALS ====================
+        function calculateTotals() {
+            const subtotal = order.reduce((s, l) => s + l.price * l.quantity, 0);
+            const originalSubtotal = order.reduce((s, l) => s + l.originalPrice * l.quantity, 0);
+            const itemDiscounts = originalSubtotal - subtotal;
+            const tax = subtotal * (settings.taxRate / 100);
+            const total = subtotal + tax;
+            return { subtotal, originalSubtotal, itemDiscounts, tax, total };
+        }
+
+        function updateTotals() {
+            const t = calculateTotals();
+            subtotalDisplay.textContent = formatMoney(t.originalSubtotal);
+
+            if (t.itemDiscounts > 0.5) {
+                discountRow.style.display = 'flex';
+                discountDisplay.textContent = '-' + formatMoney(t.itemDiscounts);
+            } else {
+                discountRow.style.display = 'none';
+            }
+
+            taxRateLabel.textContent = settings.taxRate;
+            taxDisplay.textContent = formatMoney(t.tax);
+            totalDisplay.textContent = formatMoney(t.total);
+        }
+
+        // ==================== RENDER MENU ====================
+        function renderCategories() {
+            const cats = ['All', ...new Set(MENU_ITEMS.map(i => i.category))];
+            categoryTabs.innerHTML = cats.map(c =>
+                `<button class="cat-btn ${c === currentCategory ? 'active' : ''}" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</button>`
+            ).join('');
+        }
+
+        function renderMenuItems() {
+            let filtered = currentCategory === 'All'
+                ? MENU_ITEMS
+                : MENU_ITEMS.filter(i => i.category === currentCategory);
+
+            if (hideUnavailable) {
+                filtered = filtered.filter(i => i.available);
+            }
+
+            menuGrid.innerHTML = filtered.map(item => {
+                const effective = getEffectivePrice(item);
+                const hasDisc = (item.discountAmount > 0 || item.discountPercent > 0);
+                const isUnavailable = !item.available;
+
+                const badges = [];
+                if (isUnavailable) {
+                    badges.push(`<span class="item-unavailable-badge">N/A</span>`);
+                } else if (hasDisc) {
+                    badges.push(`<span class="item-discount-badge">🏷️</span>`);
+                }
+
+                const overlay = isUnavailable
+                    ? `<div class="unavailable-overlay">NOT AVAILABLE</div>`
+                    : '';
+
+                return `
+                    <div class="menu-item ${isUnavailable ? 'unavailable' : ''}" data-id="${item.id}">
+                        ${overlay}
+                        ${badges.join('')}
+                        <div class="item-name">${escapeHtml(item.name)}</div>
+                        <div class="item-price">${formatMoney(effective)}</div>
+                        ${hasDisc && !isUnavailable ? `<div class="item-original">${formatMoney(item.price)}</div>` : ''}
+                        <div class="item-cat">${escapeHtml(item.category)}</div>
+                    </div>
+                `;
+            }).join('');
+
+            if (filtered.length === 0) {
+                menuGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:#94a3b8;font-style:italic;">No items to show</div>';
+            }
+        }
+
+        // ==================== RENDER ORDER ====================
+        function renderOrder() {
+            if (order.length === 0) {
+                orderList.innerHTML = '<div class="empty-order">Tap items to add</div>';
+                chargeBtn.disabled = true;
+                printBtn.disabled = true;
+                holdBtn.disabled = true;
+                itemCountBadge.textContent = '0 items';
+                updateTotals();
+                return;
+            }
+
+            orderList.innerHTML = order.map(line => {
+                const hasDiscount = line.originalPrice > line.price;
+                const discAmount = (line.originalPrice - line.price) * line.quantity;
+                const isUnavailable = line.unavailable;
+
+                return `
+                    <div class="order-line" data-id="${line.id}">
+                        <div class="line-left">
+                            <div class="line-name">${escapeHtml(line.name)}</div>
+                            <div class="line-price">${formatMoney(line.price)} each</div>
+                            ${hasDiscount ? `<div class="line-discount-tag">🏷️ -${formatMoney(discAmount)}</div>` : ''}
+                            ${isUnavailable ? `<div class="line-unavailable-warn">⚠️ N/A — Remove</div>` : ''}
+                        </div>
+                        <div class="line-controls">
+                            <button class="qty-btn" data-action="decrease" data-id="${line.id}">−</button>
+                            <span class="qty-val">${line.quantity}</span>
+                            <button class="qty-btn" data-action="increase" data-id="${line.id}">+</button>
+                            <button class="line-icon-btn remove" data-action="remove" data-id="${line.id}" title="Remove">✕</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const totalItems = order.reduce((s, l) => s + l.quantity, 0);
+            itemCountBadge.textContent = `${totalItems} item${totalItems !== 1 ? 's' : ''}`;
+            chargeBtn.disabled = false;
+            printBtn.disabled = false;
+            holdBtn.disabled = false;
+            updateTotals();
+        }
+
+        // ==================== ADD / UPDATE / REMOVE ====================
+        function addToOrder(menuItemId) {
+            const menuItem = MENU_ITEMS.find(m => m.id === menuItemId);
+            if (!menuItem) return;
+
+            if (!menuItem.available) {
+                showToast(`"${menuItem.name}" is not available`, 'error');
+                return;
+            }
+
+            const effectivePrice = getEffectivePrice(menuItem);
+            const existing = order.find(l => l.id === menuItemId);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                order.push({
+                    id: menuItem.id,
+                    name: menuItem.name,
+                    price: effectivePrice,
+                    originalPrice: menuItem.price,
+                    quantity: 1,
+                    unavailable: false
+                });
+            }
+            renderOrder();
+        }
+
+        function updateQuantity(itemId, delta) {
+            const line = order.find(l => l.id === itemId);
+            if (!line) return;
+            const newQty = line.quantity + delta;
+            if (newQty <= 0) {
+                order = order.filter(l => l.id !== itemId);
+            } else {
+                line.quantity = newQty;
+            }
+            renderOrder();
+        }
+
+        function removeItem(itemId) {
+            order = order.filter(l => l.id !== itemId);
+            renderOrder();
+        }
+
+        function refreshOrderAvailability() {
+            let changed = false;
+            order.forEach(line => {
+                const menuItem = MENU_ITEMS.find(m => m.id === line.id);
+                if (menuItem && !menuItem.available && !line.unavailable) {
+                    line.unavailable = true;
+                    changed = true;
+                } else if (menuItem && menuItem.available && line.unavailable) {
+                    line.unavailable = false;
+                    changed = true;
+                }
+            });
+            if (changed) renderOrder();
+        }
+
+        // ==================== PRINT RECEIPT ====================
+        function buildReceiptHTML(paymentMethod, cashReceived, change) {
+            const t = calculateTotals();
+            const now = new Date();
+            const dateStr = now.toLocaleDateString();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const linesHTML = order.map(l => {
+                const hasDiscount = l.originalPrice > l.price;
+                const lineTotal = l.price * l.quantity;
+                const baseTotal = l.originalPrice * l.quantity;
+                const disc = baseTotal - lineTotal;
+                return `
+                    <div style="margin-bottom:6px;">
+                        <div style="display:flex;justify-content:space-between;">
+                            <span>${l.quantity}x ${escapeHtml(l.name)}</span>
+                            <span>${formatMoney(lineTotal)}</span>
+                        </div>
+                        ${hasDiscount ? `<div style="font-size:0.8rem;color:#666;padding-left:12px;">discount -${formatMoney(disc)}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            const payLine = paymentMethod
+                ? `<div class="line"><span>Paid by</span><span style="text-transform:capitalize;">${paymentMethod}</span></div>`
+                : '';
+            const cashLine = (paymentMethod === 'cash' && cashReceived > 0)
+                ? `<div class="line"><span>Cash received</span><span>${formatMoney(cashReceived)}</span></div>
+                   <div class="line"><span>Change</span><span>${formatMoney(change)}</span></div>`
+                : '';
+
+            return `
+                <!DOCTYPE html>
+                <html>
+                <head><title>Receipt - Table ${currentTable}</title>
+                <style>
+                    body { font-family: 'Courier New', monospace; max-width: 320px; margin: 20px auto; padding: 10px; }
+                    .header { text-align: center; margin-bottom: 14px; }
+                    .header h2 { margin: 0; font-size: 1.3rem; }
+                    .header p { margin: 3px 0; font-size: 0.85rem; }
+                    .divider { border-top: 1px dashed #000; margin: 10px 0; }
+                    .line { display: flex; justify-content: space-between; font-size: 0.9rem; margin: 4px 0; }
+                    .line.total { font-weight: bold; font-size: 1.1rem; }
+                    .line.discount { color: #b45309; font-size: 0.85rem; }
+                    .footer { text-align: center; margin-top: 20px; font-size: 0.8rem; }
+                </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h2>🍽️ ${escapeHtml(settings.restaurantName || 'Restaurant POS')}</h2>
+                        <p>Table ${currentTable}</p>
+                        <p>${dateStr} ${timeStr}</p>
+                    </div>
+                    <div class="divider"></div>
+                    ${linesHTML}
+                    <div class="divider"></div>
+                    <div class="line"><span>Subtotal</span><span>${formatMoney(t.originalSubtotal)}</span></div>
+                    ${t.itemDiscounts > 0.5 ? `<div class="line discount"><span>Item discounts</span><span>-${formatMoney(t.itemDiscounts)}</span></div>` : ''}
+                    <div class="line"><span>Tax (${settings.taxRate}%)</span><span>${formatMoney(t.tax)}</span></div>
+                    <div class="line total"><span>TOTAL</span><span>${formatMoney(t.total)}</span></div>
+                    <div class="divider"></div>
+                    ${payLine}
+                    ${cashLine}
+                    <div class="divider"></div>
+                    <div class="footer"><p>Thank you! 🙏</p></div>
+                </body>
+                </html>
+            `;
+        }
+
+        function printReceipt(paymentMethod, cashReceived, change) {
+            if (order.length === 0) return;
+            const html = buildReceiptHTML(paymentMethod, cashReceived, change);
+            const w = window.open('', '_blank', 'width=400,height=600');
+            w.document.write(html);
+            w.document.close();
+            w.focus();
+            setTimeout(() => w.print(), 300);
+        }
+
+        // ==================== PAYMENT ====================
+        function renderCashQuickButtons() {
+            cashQuickGroup.innerHTML = CASH_QUICK_AMOUNTS.map(amt =>
+                `<button class="cash-quick" data-cash="${amt}">${amt.toLocaleString()}</button>`
+            ).join('') + `<button class="cash-quick" data-cash="exact">Exact</button>`;
+        }
+
+        function openPaymentModal() {
+            if (order.length === 0) return;
+
+            const unavailableLines = order.filter(l => l.unavailable);
+            if (unavailableLines.length > 0) {
+                showToast(`Remove unavailable items first: ${unavailableLines.map(l => l.name).join(', ')}`, 'error');
+                return;
+            }
+
+            const t = calculateTotals();
+            paymentAmountDue.textContent = formatMoney(t.total);
+            selectedPaymentMethod = null;
+            cashReceivedInput.value = '';
+            changeDisplay.style.display = 'none';
+            cashSection.style.display = 'none';
+            cardSection.style.display = 'none';
+            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+            confirmPaymentBtn.disabled = true;
+            renderCashQuickButtons();
+            paymentModal.classList.add('show');
+        }
+
+        function selectPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.toggle('selected', el.dataset.method === method);
+            });
+
+            if (method === 'cash') {
+                cashSection.style.display = 'block';
+                cardSection.style.display = 'none';
+                confirmPaymentBtn.disabled = false;
+                updateChange();
+            } else if (method === 'card') {
+                cashSection.style.display = 'none';
+                cardSection.style.display = 'block';
+                confirmPaymentBtn.disabled = false;
+            }
+        }
+
+        function updateChange() {
+            const t = calculateTotals();
+            const received = parseFloat(cashReceivedInput.value) || 0;
+            const change = received - t.total;
+            if (received > 0 && change >= 0) {
+                changeDisplay.style.display = 'block';
+                changeValue.textContent = formatMoney(change);
+            } else {
+                changeDisplay.style.display = 'none';
+            }
+        }
+
+        function confirmPayment() {
+            if (!selectedPaymentMethod || order.length === 0) return;
+            const t = calculateTotals();
+            const now = new Date();
+            let cashReceived = 0;
+            let change = 0;
+
+            if (selectedPaymentMethod === 'cash') {
+                cashReceived = parseFloat(cashReceivedInput.value) || 0;
+                if (cashReceived < t.total) {
+                    showToast('Cash received must cover total', 'error');
+                    return;
+                }
+                change = cashReceived - t.total;
+            }
+
+            // Save with full timestamp for analytics
+            salesHistory.push({
+                timestamp: now.toISOString(),
+                displayTime: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                dateKey: now.toISOString().slice(0, 10),
+                dateDisplay: now.toLocaleDateString(),
+                hourKey: now.getHours(),
+                monthKey: now.toISOString().slice(0, 7),
+                table: currentTable,
+                paymentMethod: selectedPaymentMethod,
+                cashReceived: cashReceived,
+                change: change,
+                items: order.map(l => ({
+                    name: l.name,
+                    qty: l.quantity,
+                    price: l.price,
+                    originalPrice: l.originalPrice,
+                    category: MENU_ITEMS.find(m => m.id === l.id)?.category || 'Other'
+                })),
+                total: t.total
+            });
+
+            saveToStorage(STORAGE_KEYS.HISTORY, salesHistory);
+            printReceipt(selectedPaymentMethod, cashReceived, change);
+
+            if (selectedPaymentMethod === 'cash') {
+                showToast(`✅ Cash ${formatMoney(cashReceived)} · Change ${formatMoney(change)}`, 'success');
+            } else {
+                showToast(`✅ Card payment ${formatMoney(t.total)} processed`, 'success');
+            }
+
+            paymentModal.classList.remove('show');
+            order = [];
+            renderOrder();
+        }
+
+        // ==================== TABLE SELECTION ====================
+        function isTableOccupied(tableNum) {
+            return heldOrders.some(h => parseInt(h.tableNumber, 10) === tableNum);
+        }
+
+        function openTableSelectModal() {
+            renderTableGrid();
+            tableSelectModal.classList.add('show');
+        }
+
+        function renderTableGrid() {
+            let html = '';
+            for (let i = 1; i <= 10; i++) {
+                const occupied = isTableOccupied(i);
+                const selected = i === parseInt(currentTable, 10);
+                const cls = ['table-tile'];
+                if (occupied) cls.push('occupied');
+                if (selected) cls.push('selected');
+                html += `
+                    <div class="${cls.join(' ')}" data-table="${i}">
+                        ${i}
+                        <span class="table-tile-label">${occupied ? 'Held' : (selected ? 'Active' : 'Free')}</span>
+                    </div>
+                `;
+            }
+            tableGrid.innerHTML = html;
+        }
+
+        function selectTable(num) {
+            if (isTableOccupied(num)) {
+                showToast(`Table ${num} is not available (held order)`, 'error');
+                return;
+            }
+            currentTable = num;
+            currentTableLabel.textContent = `Table ${num}`;
+            saveToStorage(STORAGE_KEYS.CURRENT_TABLE, currentTable);
+            tableSelectModal.classList.remove('show');
+            showToast(`Selected Table ${num}`, 'success');
+            renderOrder();
+        }
+
+        // ==================== HOLD ORDER ====================
+        function holdOrder() {
+            if (order.length === 0) return;
+
+            if (isTableOccupied(parseInt(currentTable, 10))) {
+                showToast(`Table ${currentTable} already has a held order`, 'error');
+                return;
+            }
+
+            const held = {
+                id: nextHeldId++,
+                tableNumber: currentTable,
+                items: JSON.parse(JSON.stringify(order)),
+                settings: JSON.parse(JSON.stringify(settings)),
+                heldAt: new Date().toISOString()
+            };
+            heldOrders.push(held);
+            order = [];
+            saveToStorage(STORAGE_KEYS.HELD, heldOrders);
+            saveToStorage(STORAGE_KEYS.NEXT_HELD_ID, nextHeldId);
+            renderOrder();
+            updateHeldBadge();
+            showToast(`⏸️ Order held for Table ${currentTable}`, 'success');
+        }
+
+        function updateHeldBadge() {
+            heldCountBadge.textContent = heldOrders.length;
+            heldCountBadge.style.display = heldOrders.length > 0 ? 'inline-block' : 'none';
+        }
+
+        function renderHeldOrders() {
+            if (heldOrders.length === 0) {
+                heldOrdersList.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:30px;">No held orders</p>';
+                return;
+            }
+            heldOrdersList.innerHTML = heldOrders.map(h => {
+                const total = h.items.reduce((s, l) => s + l.price * l.quantity, 0) * (1 + h.settings.taxRate / 100);
+                const itemCount = h.items.reduce((s, l) => s + l.quantity, 0);
+                const time = new Date(h.heldAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                return `
+                    <div class="held-order-card">
+                        <div class="held-order-info">
+                            <div class="held-order-table">🪑 Table ${h.tableNumber}</div>
+                            <div class="held-order-meta">${itemCount} items · Held at ${time}</div>
+                        </div>
+                        <div class="held-order-total">${formatMoney(total)}</div>
+                        <div class="held-order-actions">
+                            <button class="btn-resume" data-resume="${h.id}">Resume</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function resumeHeldOrder(heldId) {
+            const idx = heldOrders.findIndex(h => h.id === heldId);
+            if (idx === -1) return;
+            const held = heldOrders[idx];
+
+            if (order.length > 0) {
+                showToast('Please finish or hold your current order first', 'error');
+                return;
+            }
+
+            order = JSON.parse(JSON.stringify(held.items));
+            settings = JSON.parse(JSON.stringify(held.settings));
+            currentTable = parseInt(held.tableNumber, 10);
+            currentTableLabel.textContent = `Table ${currentTable}`;
+            heldOrders.splice(idx, 1);
+            saveToStorage(STORAGE_KEYS.HELD, heldOrders);
+            saveToStorage(STORAGE_KEYS.SETTINGS, settings);
+            saveToStorage(STORAGE_KEYS.CURRENT_TABLE, currentTable);
+            updateHeldBadge();
+            refreshOrderAvailability();
+            renderOrder();
+            heldOrdersModal.classList.remove('show');
+            showToast(`▶️ Resumed Table ${currentTable}`, 'success');
+        }
+
+        // ==================== SALES HISTORY ====================
+        function renderHistory() {
+            if (salesHistory.length === 0) {
+                historyContent.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:30px;">No sales yet</p>';
+                return;
+            }
+
+            const groups = {};
+            salesHistory.forEach(s => {
+                const key = s.dateKey;
+                if (!groups[key]) {
+                    groups[key] = { dateDisplay: s.dateDisplay, sales: [], dayTotal: 0 };
+                }
+                groups[key].sales.push(s);
+                groups[key].dayTotal += s.total;
+            });
+
+            const sortedDates = Object.keys(groups).sort().reverse();
+
+            let html = '';
+            sortedDates.forEach(dateKey => {
+                const group = groups[dateKey];
+                const daySales = [...group.sales].reverse();
+
+                html += `
+                    <div class="history-day-header">
+                        <span>📅 ${group.dateDisplay}</span>
+                        <span class="history-day-total">Grand Total: ${formatMoney(group.dayTotal)}</span>
+                    </div>
+                    <table class="history-table">
+                        <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Table</th>
+                            <th>Items</th>
+                            <th>Payment</th>
+                            <th style="text-align:right;">Total</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        ${daySales.map(s => {
+                            const itemStr = s.items.map(i => `${i.qty}x ${i.name}`).join(', ');
+                            const short = itemStr.length > 40 ? itemStr.slice(0, 40) + '…' : itemStr;
+                            const payTag = s.paymentMethod
+                                ? `<span class="payment-tag ${s.paymentMethod}">${s.paymentMethod}</span>`
+                                : '—';
+                            const cashInfo = (s.paymentMethod === 'cash' && s.cashReceived)
+                                ? `<div style="font-size:0.7rem;color:#64748b;margin-top:2px;">Recv ${formatMoney(s.cashReceived)} · Chg ${formatMoney(s.change)}</div>`
+                                : '';
+                            return `
+                                <tr>
+                                    <td style="white-space:nowrap;">${s.displayTime}</td>
+                                    <td><strong>${s.table || '—'}</strong></td>
+                                    <td style="font-size:0.8rem;">${short}</td>
+                                    <td>${payTag}${cashInfo}</td>
+                                    <td style="font-weight:600;color:#3b82f6;text-align:right;white-space:nowrap;">${formatMoney(s.total)}</td>
+                                </tr>
+                            `;
+                        }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            });
+
+            historyContent.innerHTML = html;
+        }
+
+        function clearHistory() {
+            if (salesHistory.length === 0) return;
+            if (confirm('Clear all sales history? This cannot be undone.')) {
+                salesHistory = [];
+                saveToStorage(STORAGE_KEYS.HISTORY, salesHistory);
+                renderHistory();
+                showToast('History cleared', 'success');
+            }
+        }
+
+        // ==================== EXPORT TO EXCEL (CSV) ====================
+        function exportToExcel() {
+            if (salesHistory.length === 0) {
+                showToast('No sales data to export', 'error');
+                return;
+            }
+
+            // Build CSV with detailed rows per item
+            const rows = [];
+            // Header row
+            rows.push([
+                'Date', 'Time', 'Table', 'Payment Method',
+                'Item', 'Category', 'Qty', 'Unit Price (Ks)', 'Original Price (Ks)',
+                'Discount (Ks)', 'Line Total (Ks)',
+                'Cash Received (Ks)', 'Change (Ks)',
+                'Order Total (Ks)'
+            ]);
+
+            // Chronological order (oldest first)
+            const sorted = [...salesHistory].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+            sorted.forEach(sale => {
+                const dateObj = new Date(sale.timestamp);
+                const dateStr = dateObj.toLocaleDateString();
+                const timeStr = sale.displayTime;
+
+                sale.items.forEach(item => {
+                    const lineTotal = item.price * item.qty;
+                    const originalLineTotal = (item.originalPrice || item.price) * item.qty;
+                    const disc = originalLineTotal - lineTotal;
+                    rows.push([
+                        dateStr,
+                        timeStr,
+                        sale.table || '',
+                        sale.paymentMethod || '',
+                        item.name,
+                        item.category || 'Other',
+                        item.qty,
+                        item.price,
+                        item.originalPrice || item.price,
+                        disc,
+                        lineTotal,
+                        sale.cashReceived || 0,
+                        sale.change || 0,
+                        sale.total
+                    ]);
+                });
+            });
+
+            // Convert to CSV with proper escaping
+            const csvContent = rows.map(row =>
+                row.map(cell => {
+                    const str = String(cell ?? '');
+                    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                        return `"${str.replace(/"/g, '""')}"`;
+                    }
+                    return str;
+                }).join(',')
+            ).join('\n');
+
+            // Prepend BOM for Excel UTF-8 compatibility
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const now = new Date();
+            const filename = `sales_history_${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}.csv`;
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showToast(`Exported ${sorted.length} sales to CSV`, 'success');
+        }
+
+        // ==================== SALES ANALYTICS ====================
+        function computeAnalytics() {
+            if (salesHistory.length === 0) return null;
+
+            const totalRevenue = salesHistory.reduce((s, sale) => s + sale.total, 0);
+            const totalOrders = salesHistory.length;
+            const totalItemsSold = salesHistory.reduce((s, sale) =>
+                s + sale.items.reduce((si, i) => si + i.qty, 0), 0
+            );
+            const avgOrderValue = totalRevenue / totalOrders;
+
+            // Item aggregation
+            const itemMap = {};
+            salesHistory.forEach(sale => {
+                sale.items.forEach(item => {
+                    if (!itemMap[item.name]) {
+                        itemMap[item.name] = {
+                            name: item.name,
+                            category: item.category || 'Other',
+                            qty: 0,
+                            revenue: 0
+                        };
+                    }
+                    itemMap[item.name].qty += item.qty;
+                    itemMap[item.name].revenue += item.price * item.qty;
+                });
+            });
+            const topItems = Object.values(itemMap).sort((a, b) => b.qty - a.qty);
+
+            // Category aggregation
+            const catMap = {};
+            salesHistory.forEach(sale => {
+                sale.items.forEach(item => {
+                    const cat = item.category || 'Other';
+                    if (!catMap[cat]) catMap[cat] = { category: cat, qty: 0, revenue: 0 };
+                    catMap[cat].qty += item.qty;
+                    catMap[cat].revenue += item.price * item.qty;
+                });
+            });
+            const topCategories = Object.values(catMap).sort((a, b) => b.revenue - a.revenue);
+
+            // Daily sales (last 7 days)
+            const dailyMap = {};
+            salesHistory.forEach(sale => {
+                if (!dailyMap[sale.dateKey]) {
+                    dailyMap[sale.dateKey] = { dateKey: sale.dateKey, dateDisplay: sale.dateDisplay, total: 0, orders: 0 };
+                }
+                dailyMap[sale.dateKey].total += sale.total;
+                dailyMap[sale.dateKey].orders += 1;
+            });
+            const dailySales = Object.values(dailyMap).sort((a, b) => a.dateKey.localeCompare(b.dateKey));
+            const last7Days = dailySales.slice(-7);
+
+            // Monthly sales
+            const monthlyMap = {};
+            salesHistory.forEach(sale => {
+                const mk = sale.monthKey;
+                if (!monthlyMap[mk]) {
+                    const d = new Date(mk + '-01');
+                    monthlyMap[mk] = {
+                        monthKey: mk,
+                        monthDisplay: d.toLocaleDateString(undefined, { month: 'short', year: 'numeric' }),
+                        total: 0, orders: 0
+                    };
+                }
+                monthlyMap[mk].total += sale.total;
+                monthlyMap[mk].orders += 1;
+            });
+            const monthlySales = Object.values(monthlyMap).sort((a, b) => a.monthKey.localeCompare(b.monthKey));
+
+            // Peak hours
+            const hourMap = {};
+            for (let h = 0; h < 24; h++) hourMap[h] = { hour: h, total: 0, orders: 0 };
+            salesHistory.forEach(sale => {
+                const h = sale.hourKey !== undefined ? sale.hourKey : new Date(sale.timestamp).getHours();
+                if (hourMap[h]) {
+                    hourMap[h].total += sale.total;
+                    hourMap[h].orders += 1;
+                }
+            });
+            const peakHours = Object.values(hourMap);
+            const topHour = peakHours.reduce((max, h) => h.orders > max.orders ? h : max, peakHours[0]);
+
+            // Payment method breakdown
+            const cashTotal = salesHistory.filter(s => s.paymentMethod === 'cash').reduce((s, x) => s + x.total, 0);
+            const cardTotal = salesHistory.filter(s => s.paymentMethod === 'card').reduce((s, x) => s + x.total, 0);
+            const cashCount = salesHistory.filter(s => s.paymentMethod === 'cash').length;
+            const cardCount = salesHistory.filter(s => s.paymentMethod === 'card').length;
+
+            return {
+                totalRevenue, totalOrders, totalItemsSold, avgOrderValue,
+                topItems, topCategories,
+                last7Days, dailySales, monthlySales,
+                peakHours, topHour,
+                cashTotal, cardTotal, cashCount, cardCount
+            };
+        }
+
+        function renderAnalytics() {
+            if (salesHistory.length === 0) {
+                analyticsContent.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:30px;">No sales data yet. Complete some orders to see analytics.</p>';
+                return;
+            }
+
+            const a = computeAnalytics();
+            const maxDailyTotal = Math.max(...a.last7Days.map(d => d.total), 1);
+            const maxMonthlyTotal = Math.max(...a.monthlySales.map(m => m.total), 1);
+            const maxHourOrders = Math.max(...a.peakHours.map(h => h.orders), 1);
+            const maxItemQty = a.topItems[0]?.qty || 1;
+            const maxCatRevenue = a.topCategories[0]?.revenue || 1;
+
+            const hourLabel = (h) => {
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                const hr = h % 12 === 0 ? 12 : h % 12;
+                return `${hr}${ampm}`;
+            };
+
+            let html = `
+                <div class="kpi-grid">
+                    <div class="kpi-tile">
+                        <div class="kpi-label">Total Revenue</div>
+                        <div class="kpi-value blue">${formatMoney(a.totalRevenue)}</div>
+                    </div>
+                    <div class="kpi-tile">
+                        <div class="kpi-label">Total Orders</div>
+                        <div class="kpi-value green">${a.totalOrders}</div>
+                    </div>
+                    <div class="kpi-tile">
+                        <div class="kpi-label">Items Sold</div>
+                        <div class="kpi-value orange">${a.totalItemsSold}</div>
+                    </div>
+                    <div class="kpi-tile">
+                        <div class="kpi-label">Avg Order Value</div>
+                        <div class="kpi-value purple">${formatMoney(a.avgOrderValue)}</div>
+                    </div>
+                </div>
+
+                <div class="analytics-grid">
+                    <!-- TOP ITEMS -->
+                    <div class="analytics-card">
+                        <h3>🏆 Top Selling Items (by qty)</h3>
+                        ${a.topItems.length === 0
+                            ? '<div class="empty-analytics">No data</div>'
+                            : `<div class="top-items-list">
+                                ${a.topItems.slice(0, 8).map((item, idx) => `
+                                    <div class="top-item-row">
+                                        <div class="top-item-rank">${idx + 1}</div>
+                                        <div class="top-item-name">${escapeHtml(item.name)}</div>
+                                        <div class="top-item-bar">
+                                            <div class="top-item-bar-fill" style="width:${(item.qty / maxItemQty) * 100}%"></div>
+                                        </div>
+                                        <div class="top-item-value">${item.qty}</div>
+                                    </div>
+                                `).join('')}
+                            </div>`
+                        }
+                    </div>
+
+                    <!-- TOP CATEGORIES -->
+                    <div class="analytics-card">
+                        <h3>📂 Sales by Category</h3>
+                        ${a.topCategories.length === 0
+                            ? '<div class="empty-analytics">No data</div>'
+                            : `<div class="category-list">
+                                ${a.topCategories.map(cat => `
+                                    <div class="category-row">
+                                        <div class="category-name">${escapeHtml(cat.category)}</div>
+                                        <div class="category-bar">
+                                            <div class="category-bar-fill" style="width:${(cat.revenue / maxCatRevenue) * 100}%"></div>
+                                        </div>
+                                        <div class="category-value">${formatMoney(cat.revenue)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>`
+                        }
+                    </div>
+
+                    <!-- DAILY TREND (LAST 7 DAYS) -->
+                    <div class="analytics-card full-width">
+                        <h3>📅 Daily Sales Trend (Last 7 Days)</h3>
+                        ${a.last7Days.length === 0
+                            ? '<div class="empty-analytics">No data</div>'
+                            : `<div class="bar-chart">
+                                ${a.last7Days.map(d => {
+                                    const pct = (d.total / maxDailyTotal) * 100;
+                                    const shortDate = new Date(d.dateKey).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                                    return `
+                                        <div class="bar-wrapper" title="${d.dateDisplay}: ${formatMoney(d.total)} (${d.orders} orders)">
+                                            <div class="bar-value">${formatMoney(d.total).replace(' Ks', '')}</div>
+                                            <div class="bar" style="height:${pct}%"></div>
+                                            <div class="bar-label">${shortDate}</div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>`
+                        }
+                    </div>
+
+                    <!-- MONTHLY TREND -->
+                    <div class="analytics-card full-width">
+                        <h3>📈 Monthly Sales Trend</h3>
+                        ${a.monthlySales.length === 0
+                            ? '<div class="empty-analytics">No data</div>'
+                            : `<div class="bar-chart">
+                                ${a.monthlySales.map(m => {
+                                    const pct = (m.total / maxMonthlyTotal) * 100;
+                                    return `
+                                        <div class="bar-wrapper" title="${m.monthDisplay}: ${formatMoney(m.total)} (${m.orders} orders)">
+                                            <div class="bar-value">${formatMoney(m.total).replace(' Ks', '')}</div>
+                                            <div class="bar" style="height:${pct}%;background:linear-gradient(180deg,#7c3aed 0%,#6d28d9 100%);"></div>
+                                            <div class="bar-label">${m.monthDisplay}</div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>`
+                        }
+                    </div>
+
+                    <!-- PEAK HOURS -->
+                    <div class="analytics-card full-width">
+                        <h3>⏰ Peak Hours (Orders by Hour) · Peak: ${hourLabel(a.topHour.hour)} (${a.topHour.orders} orders)</h3>
+                        <div class="bar-chart" style="height:150px;">
+                            ${a.peakHours.map(h => {
+                                const pct = (h.orders / maxHourOrders) * 100;
+                                return `
+                                    <div class="bar-wrapper" title="${hourLabel(h.hour)}: ${h.orders} orders · ${formatMoney(h.total)}">
+                                        <div class="bar-value">${h.orders > 0 ? h.orders : ''}</div>
+                                        <div class="bar" style="height:${pct}%;background:linear-gradient(180deg,#059669 0%,#047857 100%);min-height:${h.orders > 0 ? 4 : 0}px;"></div>
+                                        <div class="bar-label">${hourLabel(h.hour)}</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+
+                    <!-- PAYMENT BREAKDOWN -->
+                    <div class="analytics-card">
+                        <h3>💳 Payment Methods</h3>
+                        <div style="display:flex;flex-direction:column;gap:10px;">
+                            <div>
+                                <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:600;margin-bottom:4px;">
+                                    <span>💵 Cash (${a.cashCount} orders)</span>
+                                    <span style="color:#059669;">${formatMoney(a.cashTotal)}</span>
+                                </div>
+                                <div style="height:8px;background:#e2e8f0;border-radius:10px;overflow:hidden;">
+                                    <div style="height:100%;width:${a.totalRevenue > 0 ? (a.cashTotal / a.totalRevenue) * 100 : 0}%;background:linear-gradient(90deg,#059669,#10b981);"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:600;margin-bottom:4px;">
+                                    <span>💳 Card (${a.cardCount} orders)</span>
+                                    <span style="color:#2563eb;">${formatMoney(a.cardTotal)}</span>
+                                </div>
+                                <div style="height:8px;background:#e2e8f0;border-radius:10px;overflow:hidden;">
+                                    <div style="height:100%;width:${a.totalRevenue > 0 ? (a.cardTotal / a.totalRevenue) * 100 : 0}%;background:linear-gradient(90deg,#2563eb,#3b82f6);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SUMMARY STATS -->
+                    <div class="analytics-card">
+                        <h3>📊 Quick Summary</h3>
+                        <div style="display:flex;flex-direction:column;gap:10px;font-size:0.9rem;">
+                            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f1f5f9;">
+                                <span style="color:#64748b;">Best day</span>
+                                <strong>${a.dailySales.length > 0 ? a.dailySales.reduce((m, d) => d.total > m.total ? d : m).dateDisplay : '—'}</strong>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f1f5f9;">
+                                <span style="color:#64748b;">Best month</span>
+                                <strong>${a.monthlySales.length > 0 ? a.monthlySales.reduce((m, x) => x.total > m.total ? x : m).monthDisplay : '—'}</strong>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f1f5f9;">
+                                <span style="color:#64748b;">Peak hour</span>
+                                <strong>${hourLabel(a.topHour.hour)}</strong>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;padding:8px 0;">
+                                <span style="color:#64748b;">Most popular item</span>
+                                <strong>${a.topItems[0] ? escapeHtml(a.topItems[0].name) : '—'}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            analyticsContent.innerHTML = html;
+        }
+
+        // ==================== SETTINGS ====================
+        function openSettingsModal() {
+            taxRateInput.value = settings.taxRate;
+            restaurantNameInput.value = settings.restaurantName || 'Restaurant POS';
+            settingsModal.classList.add('show');
+        }
+
+        function saveSettings() {
+            const tr = parseFloat(taxRateInput.value);
+            if (isNaN(tr) || tr < 0 || tr > 50) { showToast('Tax 0–50', 'error'); return; }
+            settings.taxRate = tr;
+            settings.restaurantName = restaurantNameInput.value.trim() || 'Restaurant POS';
+            saveToStorage(STORAGE_KEYS.SETTINGS, settings);
+            settingsModal.classList.remove('show');
+            renderOrder();
+            showToast('Settings saved', 'success');
+        }
+
+        // ==================== EDIT MENU ====================
+        function openEditMenuModal() {
+            tempMenuItems = JSON.parse(JSON.stringify(MENU_ITEMS));
+            tempCategories = [...new Set([
+                ...DEFAULT_CATEGORIES,
+                ...MENU_ITEMS.map(i => i.category)
+            ])].sort();
+            renderEditMenuList();
+            editMenuModal.classList.add('show');
+        }
+
+        function renderEditMenuList() {
+            if (tempMenuItems.length === 0) {
+                editMenuList.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No items. Add one below.</p>';
+                return;
+            }
+            editMenuList.innerHTML = tempMenuItems.map((item, idx) => {
+                const catOptions = tempCategories.map(c =>
+                    `<option value="${escapeHtml(c)}" ${c === item.category ? 'selected' : ''}>${escapeHtml(c)}</option>`
+                ).join('');
+                const isUnavail = item.available === false;
+                return `
+                    <div class="edit-item-row ${isUnavail ? 'unavailable-row' : ''}" data-idx="${idx}">
+                        <input type="text" class="name-input" value="${escapeHtml(item.name)}" placeholder="Name">
+                        <input type="number" class="price-input" value="${item.price}" step="50" min="0" placeholder="Price">
+                        <select class="cat-select">
+                            ${catOptions}
+                        </select>
+                        <input type="number" class="disc-amt" value="${item.discountAmount || ''}" min="0" step="50" placeholder="− Ks">
+                        <input type="number" class="disc-pct" value="${item.discountPercent || ''}" min="0" max="100" step="1" placeholder="− %">
+                        <label class="avail-toggle" title="Toggle availability">
+                            <input type="checkbox" class="avail-input" ${item.available !== false ? 'checked' : ''}>
+                            <span class="avail-label">${item.available !== false ? 'Available' : 'Sold Out'}</span>
+                        </label>
+                        <button class="line-icon-btn remove" data-remove="${idx}" title="Remove">✕</button>
+                    </div>
+                `;
+            }).join('');
+
+            editMenuList.querySelectorAll('.avail-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    const label = this.parentElement.querySelector('.avail-label');
+                    if (this.checked) {
+                        label.textContent = 'Available';
+                        this.parentElement.closest('.edit-item-row').classList.remove('unavailable-row');
+                    } else {
+                        label.textContent = 'Sold Out';
+                        this.parentElement.closest('.edit-item-row').classList.add('unavailable-row');
+                    }
+                });
+            });
+        }
+
+        function addNewMenuItem() {
+            tempMenuItems.push({
+                id: Date.now(),
+                name: 'New Item',
+                price: 1000,
+                category: tempCategories[0] || 'Other',
+                discountAmount: 0,
+                discountPercent: 0,
+                available: true
+            });
+            renderEditMenuList();
+        }
+
+        function saveEditMenu() {
+            const rows = editMenuList.querySelectorAll('.edit-item-row');
+            const newItems = [];
+            rows.forEach(row => {
+                const name = row.querySelector('.name-input').value.trim();
+                const price = parseFloat(row.querySelector('.price-input').value);
+                const cat = row.querySelector('.cat-select').value.trim() || 'Other';
+                let discAmt = parseFloat(row.querySelector('.disc-amt').value) || 0;
+                let discPct = parseFloat(row.querySelector('.disc-pct').value) || 0;
+                const available = row.querySelector('.avail-input').checked;
+
+                if (!name || isNaN(price) || price < 0) return;
+                if (discAmt < 0) discAmt = 0;
+                if (discAmt > price) discAmt = price;
+                if (discPct < 0) discPct = 0;
+                if (discPct > 100) discPct = 100;
+
+                newItems.push({
+                    name,
+                    price,
+                    category: cat,
+                    discountAmount: discAmt,
+                    discountPercent: discPct,
+                    available
+                });
+            });
+            if (newItems.length === 0) { showToast('No valid items', 'error'); return; }
+            MENU_ITEMS = newItems.map((it, i) => ({ ...it, id: i + 1 }));
+            saveToStorage(STORAGE_KEYS.MENU, MENU_ITEMS);
+            editMenuModal.classList.remove('show');
+            renderCategories();
+            renderMenuItems();
+            refreshOrderAvailability();
+            renderOrder();
+            showToast('Menu saved', 'success');
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        categoryTabs.addEventListener('click', e => {
+            const b = e.target.closest('.cat-btn');
+            if (!b) return;
+            currentCategory = b.dataset.cat;
+            renderCategories();
+            renderMenuItems();
+        });
+
+        hideUnavailableToggle.addEventListener('change', e => {
+            hideUnavailable = e.target.checked;
+            saveToStorage(STORAGE_KEYS.HIDE_UNAVAILABLE, hideUnavailable);
+            renderMenuItems();
+        });
+
+        menuGrid.addEventListener('click', e => {
+            const it = e.target.closest('.menu-item');
+            if (!it) return;
+            addToOrder(parseInt(it.dataset.id, 10));
+        });
+
+        orderList.addEventListener('click', e => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            const action = btn.dataset.action;
+            const id = parseInt(btn.dataset.id, 10);
+            if (isNaN(id)) return;
+            if (action === 'increase') updateQuantity(id, 1);
+            else if (action === 'decrease') updateQuantity(id, -1);
+            else if (action === 'remove') removeItem(id);
+        });
+
+        holdBtn.addEventListener('click', holdOrder);
+        printBtn.addEventListener('click', () => printReceipt(null, 0, 0));
+        chargeBtn.addEventListener('click', openPaymentModal);
+
+        tableSelectBtn.addEventListener('click', openTableSelectModal);
+        cancelTableSelectBtn.addEventListener('click', () => tableSelectModal.classList.remove('show'));
+        tableSelectModal.addEventListener('click', e => {
+            if (e.target === tableSelectModal) tableSelectModal.classList.remove('show');
+        });
+        tableGrid.addEventListener('click', e => {
+            const tile = e.target.closest('.table-tile');
+            if (!tile) return;
+            selectTable(parseInt(tile.dataset.table, 10));
+        });
+
+        cancelPaymentBtn.addEventListener('click', () => paymentModal.classList.remove('show'));
+        paymentModal.addEventListener('click', e => {
+            if (e.target === paymentModal) paymentModal.classList.remove('show');
+        });
+        document.querySelectorAll('.payment-method').forEach(el => {
+            el.addEventListener('click', () => selectPaymentMethod(el.dataset.method));
+        });
+        cashReceivedInput.addEventListener('input', updateChange);
+        cashQuickGroup.addEventListener('click', e => {
+            const btn = e.target.closest('.cash-quick');
+            if (!btn) return;
+            const val = btn.dataset.cash;
+            if (val === 'exact') {
+                const t = calculateTotals();
+                cashReceivedInput.value = Math.round(t.total);
+            } else {
+                cashReceivedInput.value = parseFloat(val);
+            }
+            updateChange();
+        });
+        confirmPaymentBtn.addEventListener('click', confirmPayment);
+
+        settingsBtn.addEventListener('click', openSettingsModal);
+        cancelSettingsBtn.addEventListener('click', () => settingsModal.classList.remove('show'));
+        saveSettingsBtn.addEventListener('click', saveSettings);
+        settingsModal.addEventListener('click', e => {
+            if (e.target === settingsModal) settingsModal.classList.remove('show');
+        });
+
+        // History
+        historyBtn.addEventListener('click', () => { renderHistory(); historyModal.classList.add('show'); });
+        closeHistoryBtn.addEventListener('click', () => historyModal.classList.remove('show'));
+        clearHistoryBtn.addEventListener('click', clearHistory);
+        exportExcelBtn.addEventListener('click', exportToExcel);
+        historyModal.addEventListener('click', e => {
+            if (e.target === historyModal) historyModal.classList.remove('show');
+        });
+
+        // Analytics
+        analyticsBtn.addEventListener('click', () => { renderAnalytics(); analyticsModal.classList.add('show'); });
+        closeAnalyticsBtn.addEventListener('click', () => analyticsModal.classList.remove('show'));
+        analyticsModal.addEventListener('click', e => {
+            if (e.target === analyticsModal) analyticsModal.classList.remove('show');
+        });
+
+        heldOrdersBtn.addEventListener('click', () => { renderHeldOrders(); heldOrdersModal.classList.add('show'); });
+        closeHeldOrdersBtn.addEventListener('click', () => heldOrdersModal.classList.remove('show'));
+        heldOrdersModal.addEventListener('click', e => {
+            if (e.target === heldOrdersModal) heldOrdersModal.classList.remove('show');
+        });
+        heldOrdersList.addEventListener('click', e => {
+            const btn = e.target.closest('[data-resume]');
+            if (!btn) return;
+            resumeHeldOrder(parseInt(btn.dataset.resume, 10));
+        });
+
+        editMenuBtn.addEventListener('click', openEditMenuModal);
+        addMenuItemBtn.addEventListener('click', addNewMenuItem);
+        cancelEditMenuBtn.addEventListener('click', () => editMenuModal.classList.remove('show'));
+        saveEditMenuBtn.addEventListener('click', saveEditMenu);
+        editMenuList.addEventListener('click', e => {
+            const btn = e.target.closest('[data-remove]');
+            if (!btn) return;
+            const idx = parseInt(btn.dataset.remove, 10);
+            tempMenuItems.splice(idx, 1);
+            renderEditMenuList();
+        });
+        editMenuModal.addEventListener('click', e => {
+            if (e.target === editMenuModal) editMenuModal.classList.remove('show');
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
+            }
+        });
+
+        // ==================== INIT ====================
+        function init() {
+            renderCategories();
+            renderMenuItems();
+            renderOrder();
+            updateHeldBadge();
+            heldCountBadge.style.display = heldOrders.length > 0 ? 'inline-block' : 'none';
+            currentTableLabel.textContent = `Table ${currentTable}`;
+            hideUnavailableToggle.checked = hideUnavailable;
+        }
+
+        init();
+    })();
+</script>
+</body>
+</html>
