@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Restaurant POS · MMK · Analytics</title>
+    <title>Restaurant POS · MMK · Login</title>
     <style>
         * {
             box-sizing: border-box;
@@ -59,6 +59,7 @@
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .btn-icon {
@@ -976,7 +977,7 @@
             color: #dc2626;
         }
 
-        /* ANALYTICS DASHBOARD */
+        /* ANALYTICS */
         .analytics-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -1068,10 +1069,6 @@
             min-height: 2px;
             transition: 0.2s;
             position: relative;
-        }
-
-        .bar:hover {
-            background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
         }
 
         .bar-value {
@@ -1244,6 +1241,180 @@
             border-radius: 10px;
         }
 
+        /* ========== LOGIN SCREEN ========== */
+        .login-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 16px;
+        }
+        .login-screen.show { display: flex; }
+
+        .login-card {
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 40px 32px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .login-card .login-logo {
+            font-size: 3rem;
+            margin-bottom: 8px;
+        }
+
+        .login-card h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .login-card p.subtitle {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 28px;
+        }
+
+        .login-field {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        .login-field label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #334155;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .login-field input {
+            width: 100%;
+            padding: 13px 16px;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            font-size: 1rem;
+            background: #f8fafc;
+            transition: 0.15s;
+        }
+
+        .login-field input:focus {
+            outline: 2px solid #3b82f6;
+            border-color: transparent;
+            background: white;
+        }
+
+        .login-error {
+            background: #fef2f2;
+            color: #b91c1c;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 14px;
+            display: none;
+        }
+
+        .login-error.show { display: block; }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 6px 14px rgba(59, 130, 246, 0.3);
+        }
+
+        .login-btn:hover { background: #2563eb; transform: scale(1.01); }
+        .login-btn:active { transform: scale(0.98); }
+
+        .login-hint {
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            line-height: 1.6;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        .login-hint strong { color: #475569; }
+        .login-hint code {
+            background: #e2e8f0;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: #334155;
+        }
+
+        /* USER BADGE */
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 30px;
+            padding: 6px 12px 6px 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1e293b;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .user-badge:hover { background: #e2e8f0; }
+
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .user-role-tag {
+            font-size: 0.65rem;
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 2px 6px;
+            border-radius: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .user-role-tag.admin { background: #fef3c7; color: #92400e; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
         /* RESPONSIVE */
         @media (max-width: 900px) {
             .pos-app {
@@ -1280,22 +1451,59 @@
             .top-actions .btn-icon span:not(.badge) { display: none; }
             .btn-icon { padding: 8px 12px; }
             .table-grid { grid-template-columns: repeat(3, 1fr); }
+            .user-badge span:not(.user-role-tag) { display: none; }
         }
     </style>
 </head>
 <body>
+
+<!-- ========== LOGIN SCREEN ========== -->
+<div class="login-screen" id="loginScreen">
+    <div class="login-card">
+        <div class="login-logo">🍽️</div>
+        <h1>Restaurant POS</h1>
+        <p class="subtitle">Sign in to continue</p>
+
+        <div class="login-error" id="loginError">Invalid username or password</div>
+
+        <form id="loginForm" autocomplete="off">
+            <div class="login-field">
+                <label>Username</label>
+                <input type="text" id="loginUsername" placeholder="Enter username" required autofocus>
+            </div>
+            <div class="login-field">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="login-btn">Sign In →</button>
+        </form>
+
+        <div class="login-hint">
+            <strong>Demo accounts</strong><br>
+            👑 Admin — <code>admin</code> / <code>admin123</code><br>
+            💼 Cashier — <code>cashier</code> / <code>cashier123</code>
+        </div>
+    </div>
+</div>
+
+<!-- ========== POS APP ========== -->
 <div class="pos-app">
     <!-- TOP BAR -->
     <div class="top-bar">
         <div class="logo">
-            <span>🍽️</span> Myitkyina Thu <span style="font-weight:400;font-size:0.8rem;color:#64748b;"> </span>
+            <span>🍽️</span> POS <span style="font-weight:400;font-size:0.8rem;color:#64748b;">MMK</span>
         </div>
         <div class="top-actions">
             <button class="btn-icon" id="heldOrdersBtn" title="Held Orders">⏸️ <span>Held</span> <span class="badge" id="heldCountBadge">0</span></button>
             <button class="btn-icon" id="historyBtn" title="Sales History">📊 <span>History</span></button>
             <button class="btn-icon" id="analyticsBtn" title="Sales Analytics">📈 <span>Analytics</span></button>
-            <button class="btn-icon" id="editMenuBtn" title="Edit Menu">✏️ <span>Menu</span></button>
-            <button class="btn-icon" id="settingsBtn" title="Settings">⚙️ <span>Settings</span></button>
+            <button class="btn-icon admin-only" id="editMenuBtn" title="Edit Menu">✏️ <span>Menu</span></button>
+            <button class="btn-icon admin-only" id="settingsBtn" title="Settings">⚙️ <span>Settings</span></button>
+            <div class="user-badge" id="userBadge" title="Click to sign out">
+                <div class="user-avatar" id="userAvatar">?</div>
+                <span id="userNameLabel">—</span>
+                <span class="user-role-tag" id="userRoleTag">—</span>
+            </div>
         </div>
     </div>
 
@@ -1426,14 +1634,14 @@
     </div>
 </div>
 
-<!-- SALES HISTORY MODAL (with Export Excel) -->
+<!-- SALES HISTORY MODAL -->
 <div class="modal-overlay" id="historyModal">
     <div class="modal-card xwide">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px;">
             <h2 style="margin:0;">📊 Sales History</h2>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
                 <button class="btn-icon primary-action" id="exportExcelBtn" title="Export to Excel">📥 Export Excel</button>
-                <button class="btn-icon" id="clearHistoryBtn" style="background:#fef2f2;border-color:#fecaca;color:#b91c1c;">🗑️ Clear</button>
+                <button class="btn-icon admin-only" id="clearHistoryBtn" style="background:#fef2f2;border-color:#fecaca;color:#b91c1c;">🗑️ Clear</button>
             </div>
         </div>
         <div style="max-height:480px; overflow-y:auto; padding-right:4px;" id="historyContent">
@@ -1489,6 +1697,19 @@
     </div>
 </div>
 
+<!-- LOGOUT CONFIRM MODAL -->
+<div class="modal-overlay" id="logoutConfirmModal">
+    <div class="modal-card" style="max-width:380px;text-align:center;">
+        <h2 style="justify-content:center;">👋 Sign Out?</h2>
+        <p style="color:#64748b;font-size:0.9rem;margin-bottom:8px;">Are you sure you want to sign out?</p>
+        <p style="color:#94a3b8;font-size:0.8rem;">Your current order will be cleared. Held orders are saved.</p>
+        <div class="modal-actions" style="margin-top:20px;">
+            <button class="btn-cancel" id="cancelLogout">Cancel</button>
+            <button class="btn-save" id="confirmLogout" style="background:#dc2626;">Sign Out</button>
+        </div>
+    </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -1496,14 +1717,22 @@
     (function() {
         // ==================== STORAGE KEYS ====================
         const STORAGE_KEYS = {
-            MENU: 'pos_mmk_menu_v5',
-            SETTINGS: 'pos_mmk_settings_v5',
-            HISTORY: 'pos_mmk_history_v5',
-            HELD: 'pos_mmk_held_v5',
-            NEXT_HELD_ID: 'pos_mmk_next_held_id_v5',
-            CURRENT_TABLE: 'pos_mmk_current_table_v5',
-            HIDE_UNAVAILABLE: 'pos_mmk_hide_unavail_v5'
+            MENU: 'pos_mmk_menu_v6',
+            SETTINGS: 'pos_mmk_settings_v6',
+            HISTORY: 'pos_mmk_history_v6',
+            HELD: 'pos_mmk_held_v6',
+            NEXT_HELD_ID: 'pos_mmk_next_held_id_v6',
+            CURRENT_TABLE: 'pos_mmk_current_table_v6',
+            HIDE_UNAVAILABLE: 'pos_mmk_hide_unavail_v6',
+            SESSION: 'pos_mmk_session_v6'
         };
+
+        // ==================== USER ACCOUNTS ====================
+        // ⚠️ Change these passwords before deploying!
+        const USERS = [
+            { username: 'admin',   password: 'admin123',   displayName: 'Administrator', role: 'admin'   },
+            { username: 'cashier', password: 'cashier123', displayName: 'Cashier',       role: 'cashier' }
+        ];
 
         // ==================== DEFAULT DATA ====================
         const DEFAULT_MENU = [
@@ -1568,6 +1797,7 @@
         let tempMenuItems = [];
         let tempCategories = [];
         let selectedPaymentMethod = null;
+        let currentUser = null;
 
         MENU_ITEMS = MENU_ITEMS.map(item => ({
             ...item,
@@ -1610,6 +1840,7 @@
         const analyticsModal = document.getElementById('analyticsModal');
         const heldOrdersModal = document.getElementById('heldOrdersModal');
         const editMenuModal = document.getElementById('editMenuModal');
+        const logoutConfirmModal = document.getElementById('logoutConfirmModal');
 
         const tableGrid = document.getElementById('tableGrid');
         const cancelTableSelectBtn = document.getElementById('cancelTableSelect');
@@ -1647,6 +1878,19 @@
 
         const toast = document.getElementById('toast');
 
+        // Auth DOM
+        const loginScreen = document.getElementById('loginScreen');
+        const loginForm = document.getElementById('loginForm');
+        const loginUsername = document.getElementById('loginUsername');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginError = document.getElementById('loginError');
+        const userBadge = document.getElementById('userBadge');
+        const userAvatar = document.getElementById('userAvatar');
+        const userNameLabel = document.getElementById('userNameLabel');
+        const userRoleTag = document.getElementById('userRoleTag');
+        const cancelLogoutBtn = document.getElementById('cancelLogout');
+        const confirmLogoutBtn = document.getElementById('confirmLogout');
+
         // ==================== UTILITIES ====================
         function showToast(msg, type = 'default', duration = 2400) {
             if (toastTimeout) clearTimeout(toastTimeout);
@@ -1674,6 +1918,117 @@
             if (menuItem.discountAmount > 0) price -= menuItem.discountAmount;
             if (menuItem.discountPercent > 0) price -= price * (menuItem.discountPercent / 100);
             return Math.max(0, Math.round(price));
+        }
+
+        // ==================== AUTH ====================
+        function saveSession(user) {
+            try {
+                sessionStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify({
+                    username: user.username,
+                    role: user.role,
+                    displayName: user.displayName,
+                    loginAt: new Date().toISOString()
+                }));
+            } catch (e) {}
+        }
+
+        function loadSession() {
+            try {
+                const raw = sessionStorage.getItem(STORAGE_KEYS.SESSION);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) { return null; }
+        }
+
+        function clearSession() {
+            try { sessionStorage.removeItem(STORAGE_KEYS.SESSION); } catch (e) {}
+        }
+
+        function applyRolePermissions(role) {
+            document.querySelectorAll('.admin-only').forEach(el => {
+                el.style.display = (role === 'admin') ? '' : 'none';
+            });
+        }
+
+        function updateUserBadge(user) {
+            if (!user) {
+                userAvatar.textContent = '?';
+                userNameLabel.textContent = '—';
+                userRoleTag.textContent = '—';
+                userRoleTag.className = 'user-role-tag';
+                return;
+            }
+            const initials = (user.displayName || user.username)
+                .split(' ')
+                .map(w => w[0])
+                .join('')
+                .slice(0, 2)
+                .toUpperCase();
+            userAvatar.textContent = initials;
+            userNameLabel.textContent = user.displayName || user.username;
+            userRoleTag.textContent = user.role;
+            userRoleTag.className = 'user-role-tag' + (user.role === 'admin' ? ' admin' : '');
+        }
+
+        function showLogin() {
+            loginScreen.classList.add('show');
+            loginError.classList.remove('show');
+            loginUsername.value = '';
+            loginPassword.value = '';
+            setTimeout(() => loginUsername.focus(), 100);
+        }
+
+        function hideLogin() {
+            loginScreen.classList.remove('show');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = loginUsername.value.trim().toLowerCase();
+            const password = loginPassword.value;
+
+            const user = USERS.find(u => u.username === username && u.password === password);
+            if (!user) {
+                loginError.classList.add('show');
+                loginPassword.value = '';
+                loginPassword.focus();
+                const card = document.querySelector('.login-card');
+                card.style.animation = 'none';
+                setTimeout(() => { card.style.animation = 'shake 0.4s'; }, 10);
+                return;
+            }
+
+            currentUser = user;
+            saveSession(user);
+            applyRolePermissions(user.role);
+            updateUserBadge(user);
+            hideLogin();
+            showToast(`👋 Welcome, ${user.displayName}`, 'success');
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            clearSession();
+            order = [];
+            renderOrder();
+            updateUserBadge(null);
+            logoutConfirmModal.classList.remove('show');
+            showLogin();
+            showToast('Signed out', 'success');
+        }
+
+        function checkExistingSession() {
+            const session = loadSession();
+            if (session) {
+                const user = USERS.find(u => u.username === session.username);
+                if (user) {
+                    currentUser = user;
+                    applyRolePermissions(user.role);
+                    updateUserBadge(user);
+                    hideLogin();
+                    return;
+                }
+            }
+            showLogin();
         }
 
         // ==================== TOTALS ====================
@@ -1715,9 +2070,7 @@
                 ? MENU_ITEMS
                 : MENU_ITEMS.filter(i => i.category === currentCategory);
 
-            if (hideUnavailable) {
-                filtered = filtered.filter(i => i.available);
-            }
+            if (hideUnavailable) filtered = filtered.filter(i => i.available);
 
             menuGrid.innerHTML = filtered.map(item => {
                 const effective = getEffectivePrice(item);
@@ -1725,15 +2078,10 @@
                 const isUnavailable = !item.available;
 
                 const badges = [];
-                if (isUnavailable) {
-                    badges.push(`<span class="item-unavailable-badge">N/A</span>`);
-                } else if (hasDisc) {
-                    badges.push(`<span class="item-discount-badge">🏷️</span>`);
-                }
+                if (isUnavailable) badges.push(`<span class="item-unavailable-badge">N/A</span>`);
+                else if (hasDisc) badges.push(`<span class="item-discount-badge">🏷️</span>`);
 
-                const overlay = isUnavailable
-                    ? `<div class="unavailable-overlay">NOT AVAILABLE</div>`
-                    : '';
+                const overlay = isUnavailable ? `<div class="unavailable-overlay">NOT AVAILABLE</div>` : '';
 
                 return `
                     <div class="menu-item ${isUnavailable ? 'unavailable' : ''}" data-id="${item.id}">
@@ -1807,9 +2155,8 @@
 
             const effectivePrice = getEffectivePrice(menuItem);
             const existing = order.find(l => l.id === menuItemId);
-            if (existing) {
-                existing.quantity += 1;
-            } else {
+            if (existing) existing.quantity += 1;
+            else {
                 order.push({
                     id: menuItem.id,
                     name: menuItem.name,
@@ -1826,11 +2173,8 @@
             const line = order.find(l => l.id === itemId);
             if (!line) return;
             const newQty = line.quantity + delta;
-            if (newQty <= 0) {
-                order = order.filter(l => l.id !== itemId);
-            } else {
-                line.quantity = newQty;
-            }
+            if (newQty <= 0) order = order.filter(l => l.id !== itemId);
+            else line.quantity = newQty;
             renderOrder();
         }
 
@@ -1844,17 +2188,15 @@
             order.forEach(line => {
                 const menuItem = MENU_ITEMS.find(m => m.id === line.id);
                 if (menuItem && !menuItem.available && !line.unavailable) {
-                    line.unavailable = true;
-                    changed = true;
+                    line.unavailable = true; changed = true;
                 } else if (menuItem && menuItem.available && line.unavailable) {
-                    line.unavailable = false;
-                    changed = true;
+                    line.unavailable = false; changed = true;
                 }
             });
             if (changed) renderOrder();
         }
 
-        // ==================== PRINT RECEIPT ====================
+        // ==================== PRINT ====================
         function buildReceiptHTML(paymentMethod, cashReceived, change) {
             const t = calculateTotals();
             const now = new Date();
@@ -1877,9 +2219,8 @@
                 `;
             }).join('');
 
-            const payLine = paymentMethod
-                ? `<div class="line"><span>Paid by</span><span style="text-transform:capitalize;">${paymentMethod}</span></div>`
-                : '';
+            const cashierLine = currentUser ? `<p>Cashier: ${escapeHtml(currentUser.displayName)}</p>` : '';
+            const payLine = paymentMethod ? `<div class="line"><span>Paid by</span><span style="text-transform:capitalize;">${paymentMethod}</span></div>` : '';
             const cashLine = (paymentMethod === 'cash' && cashReceived > 0)
                 ? `<div class="line"><span>Cash received</span><span>${formatMoney(cashReceived)}</span></div>
                    <div class="line"><span>Change</span><span>${formatMoney(change)}</span></div>`
@@ -1906,6 +2247,7 @@
                         <h2>🍽️ ${escapeHtml(settings.restaurantName || 'Restaurant POS')}</h2>
                         <p>Table ${currentTable}</p>
                         <p>${dateStr} ${timeStr}</p>
+                        ${cashierLine}
                     </div>
                     <div class="divider"></div>
                     ${linesHTML}
@@ -1943,13 +2285,11 @@
 
         function openPaymentModal() {
             if (order.length === 0) return;
-
             const unavailableLines = order.filter(l => l.unavailable);
             if (unavailableLines.length > 0) {
                 showToast(`Remove unavailable items first: ${unavailableLines.map(l => l.name).join(', ')}`, 'error');
                 return;
             }
-
             const t = calculateTotals();
             paymentAmountDue.textContent = formatMoney(t.total);
             selectedPaymentMethod = null;
@@ -1968,7 +2308,6 @@
             document.querySelectorAll('.payment-method').forEach(el => {
                 el.classList.toggle('selected', el.dataset.method === method);
             });
-
             if (method === 'cash') {
                 cashSection.style.display = 'block';
                 cardSection.style.display = 'none';
@@ -2009,7 +2348,6 @@
                 change = cashReceived - t.total;
             }
 
-            // Save with full timestamp for analytics
             salesHistory.push({
                 timestamp: now.toISOString(),
                 displayTime: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -2018,6 +2356,7 @@
                 hourKey: now.getHours(),
                 monthKey: now.toISOString().slice(0, 7),
                 table: currentTable,
+                cashier: currentUser ? currentUser.displayName : 'Unknown',
                 paymentMethod: selectedPaymentMethod,
                 cashReceived: cashReceived,
                 change: change,
@@ -2089,18 +2428,17 @@
         // ==================== HOLD ORDER ====================
         function holdOrder() {
             if (order.length === 0) return;
-
             if (isTableOccupied(parseInt(currentTable, 10))) {
                 showToast(`Table ${currentTable} already has a held order`, 'error');
                 return;
             }
-
             const held = {
                 id: nextHeldId++,
                 tableNumber: currentTable,
                 items: JSON.parse(JSON.stringify(order)),
                 settings: JSON.parse(JSON.stringify(settings)),
-                heldAt: new Date().toISOString()
+                heldAt: new Date().toISOString(),
+                cashier: currentUser ? currentUser.displayName : 'Unknown'
             };
             heldOrders.push(held);
             order = [];
@@ -2144,12 +2482,10 @@
             const idx = heldOrders.findIndex(h => h.id === heldId);
             if (idx === -1) return;
             const held = heldOrders[idx];
-
             if (order.length > 0) {
                 showToast('Please finish or hold your current order first', 'error');
                 return;
             }
-
             order = JSON.parse(JSON.stringify(held.items));
             settings = JSON.parse(JSON.stringify(held.settings));
             currentTable = parseInt(held.tableNumber, 10);
@@ -2171,24 +2507,18 @@
                 historyContent.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:30px;">No sales yet</p>';
                 return;
             }
-
             const groups = {};
             salesHistory.forEach(s => {
                 const key = s.dateKey;
-                if (!groups[key]) {
-                    groups[key] = { dateDisplay: s.dateDisplay, sales: [], dayTotal: 0 };
-                }
+                if (!groups[key]) groups[key] = { dateDisplay: s.dateDisplay, sales: [], dayTotal: 0 };
                 groups[key].sales.push(s);
                 groups[key].dayTotal += s.total;
             });
-
             const sortedDates = Object.keys(groups).sort().reverse();
-
             let html = '';
             sortedDates.forEach(dateKey => {
                 const group = groups[dateKey];
                 const daySales = [...group.sales].reverse();
-
                 html += `
                     <div class="history-day-header">
                         <span>📅 ${group.dateDisplay}</span>
@@ -2199,6 +2529,7 @@
                         <tr>
                             <th>Time</th>
                             <th>Table</th>
+                            <th>Cashier</th>
                             <th>Items</th>
                             <th>Payment</th>
                             <th style="text-align:right;">Total</th>
@@ -2207,10 +2538,8 @@
                         <tbody>
                         ${daySales.map(s => {
                             const itemStr = s.items.map(i => `${i.qty}x ${i.name}`).join(', ');
-                            const short = itemStr.length > 40 ? itemStr.slice(0, 40) + '…' : itemStr;
-                            const payTag = s.paymentMethod
-                                ? `<span class="payment-tag ${s.paymentMethod}">${s.paymentMethod}</span>`
-                                : '—';
+                            const short = itemStr.length > 30 ? itemStr.slice(0, 30) + '…' : itemStr;
+                            const payTag = s.paymentMethod ? `<span class="payment-tag ${s.paymentMethod}">${s.paymentMethod}</span>` : '—';
                             const cashInfo = (s.paymentMethod === 'cash' && s.cashReceived)
                                 ? `<div style="font-size:0.7rem;color:#64748b;margin-top:2px;">Recv ${formatMoney(s.cashReceived)} · Chg ${formatMoney(s.change)}</div>`
                                 : '';
@@ -2218,6 +2547,7 @@
                                 <tr>
                                     <td style="white-space:nowrap;">${s.displayTime}</td>
                                     <td><strong>${s.table || '—'}</strong></td>
+                                    <td style="font-size:0.8rem;color:#64748b;">${escapeHtml(s.cashier || '—')}</td>
                                     <td style="font-size:0.8rem;">${short}</td>
                                     <td>${payTag}${cashInfo}</td>
                                     <td style="font-weight:600;color:#3b82f6;text-align:right;white-space:nowrap;">${formatMoney(s.total)}</td>
@@ -2228,7 +2558,6 @@
                     </table>
                 `;
             });
-
             historyContent.innerHTML = html;
         }
 
@@ -2242,112 +2571,76 @@
             }
         }
 
-        // ==================== EXPORT TO EXCEL (CSV) ====================
+        // ==================== EXPORT EXCEL ====================
         function exportToExcel() {
             if (salesHistory.length === 0) {
                 showToast('No sales data to export', 'error');
                 return;
             }
-
-            // Build CSV with detailed rows per item
             const rows = [];
-            // Header row
             rows.push([
-                'Date', 'Time', 'Table', 'Payment Method',
+                'Date', 'Time', 'Table', 'Cashier', 'Payment Method',
                 'Item', 'Category', 'Qty', 'Unit Price (Ks)', 'Original Price (Ks)',
                 'Discount (Ks)', 'Line Total (Ks)',
-                'Cash Received (Ks)', 'Change (Ks)',
-                'Order Total (Ks)'
+                'Cash Received (Ks)', 'Change (Ks)', 'Order Total (Ks)'
             ]);
-
-            // Chronological order (oldest first)
             const sorted = [...salesHistory].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
             sorted.forEach(sale => {
                 const dateObj = new Date(sale.timestamp);
                 const dateStr = dateObj.toLocaleDateString();
                 const timeStr = sale.displayTime;
-
                 sale.items.forEach(item => {
                     const lineTotal = item.price * item.qty;
                     const originalLineTotal = (item.originalPrice || item.price) * item.qty;
                     const disc = originalLineTotal - lineTotal;
                     rows.push([
-                        dateStr,
-                        timeStr,
-                        sale.table || '',
-                        sale.paymentMethod || '',
-                        item.name,
-                        item.category || 'Other',
-                        item.qty,
-                        item.price,
-                        item.originalPrice || item.price,
-                        disc,
-                        lineTotal,
-                        sale.cashReceived || 0,
-                        sale.change || 0,
-                        sale.total
+                        dateStr, timeStr, sale.table || '', sale.cashier || '',
+                        sale.paymentMethod || '', item.name, item.category || 'Other',
+                        item.qty, item.price, item.originalPrice || item.price,
+                        disc, lineTotal, sale.cashReceived || 0, sale.change || 0, sale.total
                     ]);
                 });
             });
+            const csvContent = rows.map(row => row.map(cell => {
+                const str = String(cell ?? '');
+                if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                    return `"${str.replace(/"/g, '""')}"`;
+                }
+                return str;
+            }).join(',')).join('\n');
 
-            // Convert to CSV with proper escaping
-            const csvContent = rows.map(row =>
-                row.map(cell => {
-                    const str = String(cell ?? '');
-                    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-                        return `"${str.replace(/"/g, '""')}"`;
-                    }
-                    return str;
-                }).join(',')
-            ).join('\n');
-
-            // Prepend BOM for Excel UTF-8 compatibility
             const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             const now = new Date();
-            const filename = `sales_history_${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}.csv`;
+            const filename = `sales_${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}.csv`;
             link.href = url;
             link.setAttribute('download', filename);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
-
             showToast(`Exported ${sorted.length} sales to CSV`, 'success');
         }
 
-        // ==================== SALES ANALYTICS ====================
+        // ==================== ANALYTICS ====================
         function computeAnalytics() {
             if (salesHistory.length === 0) return null;
-
             const totalRevenue = salesHistory.reduce((s, sale) => s + sale.total, 0);
             const totalOrders = salesHistory.length;
-            const totalItemsSold = salesHistory.reduce((s, sale) =>
-                s + sale.items.reduce((si, i) => si + i.qty, 0), 0
-            );
+            const totalItemsSold = salesHistory.reduce((s, sale) => s + sale.items.reduce((si, i) => si + i.qty, 0), 0);
             const avgOrderValue = totalRevenue / totalOrders;
 
-            // Item aggregation
             const itemMap = {};
             salesHistory.forEach(sale => {
                 sale.items.forEach(item => {
-                    if (!itemMap[item.name]) {
-                        itemMap[item.name] = {
-                            name: item.name,
-                            category: item.category || 'Other',
-                            qty: 0,
-                            revenue: 0
-                        };
-                    }
+                    if (!itemMap[item.name]) itemMap[item.name] = { name: item.name, category: item.category || 'Other', qty: 0, revenue: 0 };
                     itemMap[item.name].qty += item.qty;
                     itemMap[item.name].revenue += item.price * item.qty;
                 });
             });
             const topItems = Object.values(itemMap).sort((a, b) => b.qty - a.qty);
 
-            // Category aggregation
             const catMap = {};
             salesHistory.forEach(sale => {
                 sale.items.forEach(item => {
@@ -2359,61 +2652,42 @@
             });
             const topCategories = Object.values(catMap).sort((a, b) => b.revenue - a.revenue);
 
-            // Daily sales (last 7 days)
             const dailyMap = {};
             salesHistory.forEach(sale => {
-                if (!dailyMap[sale.dateKey]) {
-                    dailyMap[sale.dateKey] = { dateKey: sale.dateKey, dateDisplay: sale.dateDisplay, total: 0, orders: 0 };
-                }
+                if (!dailyMap[sale.dateKey]) dailyMap[sale.dateKey] = { dateKey: sale.dateKey, dateDisplay: sale.dateDisplay, total: 0, orders: 0 };
                 dailyMap[sale.dateKey].total += sale.total;
                 dailyMap[sale.dateKey].orders += 1;
             });
             const dailySales = Object.values(dailyMap).sort((a, b) => a.dateKey.localeCompare(b.dateKey));
             const last7Days = dailySales.slice(-7);
 
-            // Monthly sales
             const monthlyMap = {};
             salesHistory.forEach(sale => {
                 const mk = sale.monthKey;
                 if (!monthlyMap[mk]) {
                     const d = new Date(mk + '-01');
-                    monthlyMap[mk] = {
-                        monthKey: mk,
-                        monthDisplay: d.toLocaleDateString(undefined, { month: 'short', year: 'numeric' }),
-                        total: 0, orders: 0
-                    };
+                    monthlyMap[mk] = { monthKey: mk, monthDisplay: d.toLocaleDateString(undefined, { month: 'short', year: 'numeric' }), total: 0, orders: 0 };
                 }
                 monthlyMap[mk].total += sale.total;
                 monthlyMap[mk].orders += 1;
             });
             const monthlySales = Object.values(monthlyMap).sort((a, b) => a.monthKey.localeCompare(b.monthKey));
 
-            // Peak hours
             const hourMap = {};
             for (let h = 0; h < 24; h++) hourMap[h] = { hour: h, total: 0, orders: 0 };
             salesHistory.forEach(sale => {
                 const h = sale.hourKey !== undefined ? sale.hourKey : new Date(sale.timestamp).getHours();
-                if (hourMap[h]) {
-                    hourMap[h].total += sale.total;
-                    hourMap[h].orders += 1;
-                }
+                if (hourMap[h]) { hourMap[h].total += sale.total; hourMap[h].orders += 1; }
             });
             const peakHours = Object.values(hourMap);
             const topHour = peakHours.reduce((max, h) => h.orders > max.orders ? h : max, peakHours[0]);
 
-            // Payment method breakdown
             const cashTotal = salesHistory.filter(s => s.paymentMethod === 'cash').reduce((s, x) => s + x.total, 0);
             const cardTotal = salesHistory.filter(s => s.paymentMethod === 'card').reduce((s, x) => s + x.total, 0);
             const cashCount = salesHistory.filter(s => s.paymentMethod === 'cash').length;
             const cardCount = salesHistory.filter(s => s.paymentMethod === 'card').length;
 
-            return {
-                totalRevenue, totalOrders, totalItemsSold, avgOrderValue,
-                topItems, topCategories,
-                last7Days, dailySales, monthlySales,
-                peakHours, topHour,
-                cashTotal, cardTotal, cashCount, cardCount
-            };
+            return { totalRevenue, totalOrders, totalItemsSold, avgOrderValue, topItems, topCategories, last7Days, dailySales, monthlySales, peakHours, topHour, cashTotal, cardTotal, cashCount, cardCount };
         }
 
         function renderAnalytics() {
@@ -2421,7 +2695,6 @@
                 analyticsContent.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:30px;">No sales data yet. Complete some orders to see analytics.</p>';
                 return;
             }
-
             const a = computeAnalytics();
             const maxDailyTotal = Math.max(...a.last7Days.map(d => d.total), 1);
             const maxMonthlyTotal = Math.max(...a.monthlySales.map(m => m.total), 1);
@@ -2435,7 +2708,7 @@
                 return `${hr}${ampm}`;
             };
 
-            let html = `
+            analyticsContent.innerHTML = `
                 <div class="kpi-grid">
                     <div class="kpi-tile">
                         <div class="kpi-label">Total Revenue</div>
@@ -2450,95 +2723,78 @@
                         <div class="kpi-value orange">${a.totalItemsSold}</div>
                     </div>
                     <div class="kpi-tile">
-                        <div class="kpi-label">Avg Order Value</div>
+                        <div class="kpi-label">Avg Order</div>
                         <div class="kpi-value purple">${formatMoney(a.avgOrderValue)}</div>
                     </div>
                 </div>
 
                 <div class="analytics-grid">
-                    <!-- TOP ITEMS -->
                     <div class="analytics-card">
-                        <h3>🏆 Top Selling Items (by qty)</h3>
-                        ${a.topItems.length === 0
-                            ? '<div class="empty-analytics">No data</div>'
-                            : `<div class="top-items-list">
+                        <h3>🏆 Top Selling Items</h3>
+                        ${a.topItems.length === 0 ? '<div class="empty-analytics">No data</div>' :
+                            `<div class="top-items-list">
                                 ${a.topItems.slice(0, 8).map((item, idx) => `
                                     <div class="top-item-row">
                                         <div class="top-item-rank">${idx + 1}</div>
                                         <div class="top-item-name">${escapeHtml(item.name)}</div>
-                                        <div class="top-item-bar">
-                                            <div class="top-item-bar-fill" style="width:${(item.qty / maxItemQty) * 100}%"></div>
-                                        </div>
+                                        <div class="top-item-bar"><div class="top-item-bar-fill" style="width:${(item.qty / maxItemQty) * 100}%"></div></div>
                                         <div class="top-item-value">${item.qty}</div>
                                     </div>
                                 `).join('')}
-                            </div>`
-                        }
+                            </div>`}
                     </div>
 
-                    <!-- TOP CATEGORIES -->
                     <div class="analytics-card">
                         <h3>📂 Sales by Category</h3>
-                        ${a.topCategories.length === 0
-                            ? '<div class="empty-analytics">No data</div>'
-                            : `<div class="category-list">
+                        ${a.topCategories.length === 0 ? '<div class="empty-analytics">No data</div>' :
+                            `<div class="category-list">
                                 ${a.topCategories.map(cat => `
                                     <div class="category-row">
                                         <div class="category-name">${escapeHtml(cat.category)}</div>
-                                        <div class="category-bar">
-                                            <div class="category-bar-fill" style="width:${(cat.revenue / maxCatRevenue) * 100}%"></div>
-                                        </div>
+                                        <div class="category-bar"><div class="category-bar-fill" style="width:${(cat.revenue / maxCatRevenue) * 100}%"></div></div>
                                         <div class="category-value">${formatMoney(cat.revenue)}</div>
                                     </div>
                                 `).join('')}
-                            </div>`
-                        }
+                            </div>`}
                     </div>
 
-                    <!-- DAILY TREND (LAST 7 DAYS) -->
                     <div class="analytics-card full-width">
                         <h3>📅 Daily Sales Trend (Last 7 Days)</h3>
-                        ${a.last7Days.length === 0
-                            ? '<div class="empty-analytics">No data</div>'
-                            : `<div class="bar-chart">
+                        ${a.last7Days.length === 0 ? '<div class="empty-analytics">No data</div>' :
+                            `<div class="bar-chart">
                                 ${a.last7Days.map(d => {
                                     const pct = (d.total / maxDailyTotal) * 100;
                                     const shortDate = new Date(d.dateKey).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
                                     return `
                                         <div class="bar-wrapper" title="${d.dateDisplay}: ${formatMoney(d.total)} (${d.orders} orders)">
-                                            <div class="bar-value">${formatMoney(d.total).replace(' Ks', '')}</div>
+                                            <div class="bar-value">${Math.round(d.total).toLocaleString()}</div>
                                             <div class="bar" style="height:${pct}%"></div>
                                             <div class="bar-label">${shortDate}</div>
                                         </div>
                                     `;
                                 }).join('')}
-                            </div>`
-                        }
+                            </div>`}
                     </div>
 
-                    <!-- MONTHLY TREND -->
                     <div class="analytics-card full-width">
                         <h3>📈 Monthly Sales Trend</h3>
-                        ${a.monthlySales.length === 0
-                            ? '<div class="empty-analytics">No data</div>'
-                            : `<div class="bar-chart">
+                        ${a.monthlySales.length === 0 ? '<div class="empty-analytics">No data</div>' :
+                            `<div class="bar-chart">
                                 ${a.monthlySales.map(m => {
                                     const pct = (m.total / maxMonthlyTotal) * 100;
                                     return `
                                         <div class="bar-wrapper" title="${m.monthDisplay}: ${formatMoney(m.total)} (${m.orders} orders)">
-                                            <div class="bar-value">${formatMoney(m.total).replace(' Ks', '')}</div>
+                                            <div class="bar-value">${Math.round(m.total).toLocaleString()}</div>
                                             <div class="bar" style="height:${pct}%;background:linear-gradient(180deg,#7c3aed 0%,#6d28d9 100%);"></div>
                                             <div class="bar-label">${m.monthDisplay}</div>
                                         </div>
                                     `;
                                 }).join('')}
-                            </div>`
-                        }
+                            </div>`}
                     </div>
 
-                    <!-- PEAK HOURS -->
                     <div class="analytics-card full-width">
-                        <h3>⏰ Peak Hours (Orders by Hour) · Peak: ${hourLabel(a.topHour.hour)} (${a.topHour.orders} orders)</h3>
+                        <h3>⏰ Peak Hours · Peak: ${hourLabel(a.topHour.hour)} (${a.topHour.orders} orders)</h3>
                         <div class="bar-chart" style="height:150px;">
                             ${a.peakHours.map(h => {
                                 const pct = (h.orders / maxHourOrders) * 100;
@@ -2553,13 +2809,12 @@
                         </div>
                     </div>
 
-                    <!-- PAYMENT BREAKDOWN -->
                     <div class="analytics-card">
                         <h3>💳 Payment Methods</h3>
                         <div style="display:flex;flex-direction:column;gap:10px;">
                             <div>
                                 <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:600;margin-bottom:4px;">
-                                    <span>💵 Cash (${a.cashCount} orders)</span>
+                                    <span>💵 Cash (${a.cashCount})</span>
                                     <span style="color:#059669;">${formatMoney(a.cashTotal)}</span>
                                 </div>
                                 <div style="height:8px;background:#e2e8f0;border-radius:10px;overflow:hidden;">
@@ -2568,7 +2823,7 @@
                             </div>
                             <div>
                                 <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:600;margin-bottom:4px;">
-                                    <span>💳 Card (${a.cardCount} orders)</span>
+                                    <span>💳 Card (${a.cardCount})</span>
                                     <span style="color:#2563eb;">${formatMoney(a.cardTotal)}</span>
                                 </div>
                                 <div style="height:8px;background:#e2e8f0;border-radius:10px;overflow:hidden;">
@@ -2578,7 +2833,6 @@
                         </div>
                     </div>
 
-                    <!-- SUMMARY STATS -->
                     <div class="analytics-card">
                         <h3>📊 Quick Summary</h3>
                         <div style="display:flex;flex-direction:column;gap:10px;font-size:0.9rem;">
@@ -2595,15 +2849,13 @@
                                 <strong>${hourLabel(a.topHour.hour)}</strong>
                             </div>
                             <div style="display:flex;justify-content:space-between;padding:8px 0;">
-                                <span style="color:#64748b;">Most popular item</span>
+                                <span style="color:#64748b;">Top item</span>
                                 <strong>${a.topItems[0] ? escapeHtml(a.topItems[0].name) : '—'}</strong>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
-
-            analyticsContent.innerHTML = html;
         }
 
         // ==================== SETTINGS ====================
@@ -2627,10 +2879,7 @@
         // ==================== EDIT MENU ====================
         function openEditMenuModal() {
             tempMenuItems = JSON.parse(JSON.stringify(MENU_ITEMS));
-            tempCategories = [...new Set([
-                ...DEFAULT_CATEGORIES,
-                ...MENU_ITEMS.map(i => i.category)
-            ])].sort();
+            tempCategories = [...new Set([...DEFAULT_CATEGORIES, ...MENU_ITEMS.map(i => i.category)])].sort();
             renderEditMenuList();
             editMenuModal.classList.add('show');
         }
@@ -2649,9 +2898,7 @@
                     <div class="edit-item-row ${isUnavail ? 'unavailable-row' : ''}" data-idx="${idx}">
                         <input type="text" class="name-input" value="${escapeHtml(item.name)}" placeholder="Name">
                         <input type="number" class="price-input" value="${item.price}" step="50" min="0" placeholder="Price">
-                        <select class="cat-select">
-                            ${catOptions}
-                        </select>
+                        <select class="cat-select">${catOptions}</select>
                         <input type="number" class="disc-amt" value="${item.discountAmount || ''}" min="0" step="50" placeholder="− Ks">
                         <input type="number" class="disc-pct" value="${item.discountPercent || ''}" min="0" max="100" step="1" placeholder="− %">
                         <label class="avail-toggle" title="Toggle availability">
@@ -2707,14 +2954,7 @@
                 if (discPct < 0) discPct = 0;
                 if (discPct > 100) discPct = 100;
 
-                newItems.push({
-                    name,
-                    price,
-                    category: cat,
-                    discountAmount: discAmt,
-                    discountPercent: discPct,
-                    available
-                });
+                newItems.push({ name, price, category: cat, discountAmount: discAmt, discountPercent: discPct, available });
             });
             if (newItems.length === 0) { showToast('No valid items', 'error'); return; }
             MENU_ITEMS = newItems.map((it, i) => ({ ...it, id: i + 1 }));
@@ -2728,6 +2968,16 @@
         }
 
         // ==================== EVENT LISTENERS ====================
+        // Auth
+        loginForm.addEventListener('submit', handleLogin);
+        userBadge.addEventListener('click', () => logoutConfirmModal.classList.add('show'));
+        cancelLogoutBtn.addEventListener('click', () => logoutConfirmModal.classList.remove('show'));
+        confirmLogoutBtn.addEventListener('click', handleLogout);
+        logoutConfirmModal.addEventListener('click', e => {
+            if (e.target === logoutConfirmModal) logoutConfirmModal.classList.remove('show');
+        });
+
+        // Menu
         categoryTabs.addEventListener('click', e => {
             const b = e.target.closest('.cat-btn');
             if (!b) return;
@@ -2803,7 +3053,6 @@
             if (e.target === settingsModal) settingsModal.classList.remove('show');
         });
 
-        // History
         historyBtn.addEventListener('click', () => { renderHistory(); historyModal.classList.add('show'); });
         closeHistoryBtn.addEventListener('click', () => historyModal.classList.remove('show'));
         clearHistoryBtn.addEventListener('click', clearHistory);
@@ -2812,7 +3061,6 @@
             if (e.target === historyModal) historyModal.classList.remove('show');
         });
 
-        // Analytics
         analyticsBtn.addEventListener('click', () => { renderAnalytics(); analyticsModal.classList.add('show'); });
         closeAnalyticsBtn.addEventListener('click', () => analyticsModal.classList.remove('show'));
         analyticsModal.addEventListener('click', e => {
@@ -2860,6 +3108,7 @@
             heldCountBadge.style.display = heldOrders.length > 0 ? 'inline-block' : 'none';
             currentTableLabel.textContent = `Table ${currentTable}`;
             hideUnavailableToggle.checked = hideUnavailable;
+            checkExistingSession();
         }
 
         init();
