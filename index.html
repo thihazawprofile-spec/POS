@@ -977,6 +977,35 @@
             color: #dc2626;
         }
 
+        /* USER MANAGEMENT ROW */
+        .user-row {
+            display: grid;
+            grid-template-columns: 1.2fr 1.2fr 1.2fr 1fr auto;
+            gap: 8px;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+
+        .user-row input,
+        .user-row select {
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            font-size: 0.85rem;
+            background: white;
+        }
+
+        .user-row select { cursor: pointer; }
+
+        .user-row.self-row {
+            background: #fef9c3;
+            border-color: #fcd34d;
+        }
+
         /* ANALYTICS */
         .analytics-grid {
             display: grid;
@@ -1343,27 +1372,6 @@
         .login-btn:hover { background: #2563eb; transform: scale(1.01); }
         .login-btn:active { transform: scale(0.98); }
 
-        .login-hint {
-            margin-top: 20px;
-            font-size: 0.75rem;
-            color: #94a3b8;
-            line-height: 1.6;
-            background: #f8fafc;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px dashed #cbd5e1;
-        }
-
-        .login-hint strong { color: #475569; }
-        .login-hint code {
-            background: #e2e8f0;
-            padding: 1px 5px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.75rem;
-            color: #334155;
-        }
-
         /* USER BADGE */
         .user-badge {
             display: flex;
@@ -1444,6 +1452,10 @@
                 grid-template-rows: auto auto auto;
             }
             .edit-item-row input.name-input { grid-column: 1 / -1; }
+            .user-row {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto auto;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1477,12 +1489,6 @@
             </div>
             <button type="submit" class="login-btn">Sign In →</button>
         </form>
-
-        <div class="login-hint">
-            <strong>Demo accounts</strong><br>
-            👑 Admin — <code>admin</code> / <code>admin123</code><br>
-            💼 Cashier — <code>cashier</code> / <code>cashier123</code>
-        </div>
     </div>
 </div>
 
@@ -1615,21 +1621,37 @@
     </div>
 </div>
 
-<!-- SETTINGS MODAL -->
+<!-- SETTINGS MODAL (with Table Count + User Management) -->
 <div class="modal-overlay" id="settingsModal">
-    <div class="modal-card">
+    <div class="modal-card wide">
         <h2>⚙️ Settings</h2>
+
         <div class="setting-group">
             <label>Tax rate (%)</label>
             <input type="number" id="taxRateInput" value="5" min="0" max="30" step="0.5">
         </div>
+
         <div class="setting-group">
             <label>Restaurant Name</label>
             <input type="text" id="restaurantNameInput" value="Restaurant POS">
         </div>
-        <div class="modal-actions">
+
+        <div class="setting-group">
+            <label>Number of Tables (1–50)</label>
+            <input type="number" id="tableCountInput" value="10" min="1" max="50" step="1">
+            <p style="font-size:0.75rem;color:#64748b;margin-top:4px;">If you reduce this, held orders on removed tables will be lost.</p>
+        </div>
+
+        <h3 style="margin-top:24px;border-top:1px solid #e2e8f0;padding-top:20px;">👥 User Accounts</h3>
+        <p style="font-size:0.8rem;color:#64748b;margin-bottom:12px;">
+            Manage cashier accounts. You cannot delete your own logged-in account.
+        </p>
+        <div id="userList"></div>
+        <button class="btn-secondary" id="addUserBtn" style="width:100%;margin-top:8px;">+ Add New User</button>
+
+        <div class="modal-actions" style="margin-top:24px;">
             <button class="btn-cancel" id="cancelSettings">Cancel</button>
-            <button class="btn-save" id="saveSettings">Save settings</button>
+            <button class="btn-save" id="saveSettings">Save All Settings</button>
         </div>
     </div>
 </div>
@@ -1717,19 +1739,20 @@
     (function() {
         // ==================== STORAGE KEYS ====================
         const STORAGE_KEYS = {
-            MENU: 'pos_mmk_menu_v6',
-            SETTINGS: 'pos_mmk_settings_v6',
-            HISTORY: 'pos_mmk_history_v6',
-            HELD: 'pos_mmk_held_v6',
-            NEXT_HELD_ID: 'pos_mmk_next_held_id_v6',
-            CURRENT_TABLE: 'pos_mmk_current_table_v6',
-            HIDE_UNAVAILABLE: 'pos_mmk_hide_unavail_v6',
-            SESSION: 'pos_mmk_session_v6'
+            MENU: 'pos_mmk_menu_v7',
+            SETTINGS: 'pos_mmk_settings_v7',
+            HISTORY: 'pos_mmk_history_v7',
+            HELD: 'pos_mmk_held_v7',
+            NEXT_HELD_ID: 'pos_mmk_next_held_id_v7',
+            CURRENT_TABLE: 'pos_mmk_current_table_v7',
+            HIDE_UNAVAILABLE: 'pos_mmk_hide_unavail_v7',
+            SESSION: 'pos_mmk_session_v7',
+            USERS: 'pos_mmk_users_v7'
         };
 
-        // ==================== USER ACCOUNTS ====================
+        // ==================== DEFAULT USERS ====================
         // ⚠️ Change these passwords before deploying!
-        const USERS = [
+        const DEFAULT_USERS = [
             { username: 'admin',   password: 'admin123',   displayName: 'Administrator', role: 'admin'   },
             { username: 'cashier', password: 'cashier123', displayName: 'Cashier',       role: 'cashier' }
         ];
@@ -1757,7 +1780,8 @@
 
         const DEFAULT_SETTINGS = {
             taxRate: 5,
-            restaurantName: 'Restaurant POS'
+            restaurantName: 'Restaurant POS',
+            tableCount: 10
         };
 
         const DEFAULT_CATEGORIES = ['Main', 'Salad', 'Sides', 'Snacks', 'Drinks', 'Dessert', 'Other'];
@@ -1791,11 +1815,13 @@
         let nextHeldId = loadFromStorage(STORAGE_KEYS.NEXT_HELD_ID, 1);
         let currentTable = loadFromStorage(STORAGE_KEYS.CURRENT_TABLE, 1);
         let hideUnavailable = loadFromStorage(STORAGE_KEYS.HIDE_UNAVAILABLE, false);
+        let USERS = loadFromStorage(STORAGE_KEYS.USERS, DEFAULT_USERS);
         let order = [];
         let currentCategory = 'All';
         let toastTimeout = null;
         let tempMenuItems = [];
         let tempCategories = [];
+        let tempUsers = [];
         let selectedPaymentMethod = null;
         let currentUser = null;
 
@@ -1808,6 +1834,13 @@
 
         if (!settings.taxRate && settings.taxRate !== 0) settings.taxRate = 5;
         if (!settings.restaurantName) settings.restaurantName = 'Restaurant POS';
+        if (!settings.tableCount || settings.tableCount < 1) settings.tableCount = 10;
+
+        // Ensure USERS has at least one admin
+        if (!USERS || USERS.length === 0) USERS = DEFAULT_USERS;
+        if (!USERS.some(u => u.role === 'admin')) {
+            USERS.unshift({ username: 'admin', password: 'admin123', displayName: 'Administrator', role: 'admin' });
+        }
 
         // ==================== DOM REFS ====================
         const menuGrid = document.getElementById('menuGrid');
@@ -1857,6 +1890,9 @@
 
         const taxRateInput = document.getElementById('taxRateInput');
         const restaurantNameInput = document.getElementById('restaurantNameInput');
+        const tableCountInput = document.getElementById('tableCountInput');
+        const userList = document.getElementById('userList');
+        const addUserBtn = document.getElementById('addUserBtn');
         const saveSettingsBtn = document.getElementById('saveSettings');
         const cancelSettingsBtn = document.getElementById('cancelSettings');
 
@@ -1986,7 +2022,7 @@
             const username = loginUsername.value.trim().toLowerCase();
             const password = loginPassword.value;
 
-            const user = USERS.find(u => u.username === username && u.password === password);
+            const user = USERS.find(u => u.username.toLowerCase() === username && u.password === password);
             if (!user) {
                 loginError.classList.add('show');
                 loginPassword.value = '';
@@ -2396,7 +2432,8 @@
 
         function renderTableGrid() {
             let html = '';
-            for (let i = 1; i <= 10; i++) {
+            const count = settings.tableCount || 10;
+            for (let i = 1; i <= count; i++) {
                 const occupied = isTableOccupied(i);
                 const selected = i === parseInt(currentTable, 10);
                 const cls = ['table-tile'];
@@ -2858,19 +2895,119 @@
             `;
         }
 
-        // ==================== SETTINGS ====================
+        // ==================== SETTINGS (with Tables + Users) ====================
+        function renderUserList() {
+            if (tempUsers.length === 0) {
+                userList.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:12px;">No users</p>';
+                return;
+            }
+            userList.innerHTML = tempUsers.map((u, idx) => {
+                const isSelf = currentUser && u.username === currentUser.username;
+                const isLastAdmin = u.role === 'admin' && tempUsers.filter(x => x.role === 'admin').length === 1;
+                const canDelete = !isSelf && !isLastAdmin;
+                return `
+                    <div class="user-row ${isSelf ? 'self-row' : ''}" data-idx="${idx}">
+                        <input type="text" class="u-username" value="${escapeHtml(u.username)}" placeholder="Username" ${isSelf ? 'disabled' : ''}>
+                        <input type="text" class="u-display" value="${escapeHtml(u.displayName || '')}" placeholder="Display Name">
+                        <input type="text" class="u-password" value="${escapeHtml(u.password)}" placeholder="Password">
+                        <select class="u-role" ${isSelf ? 'disabled' : ''}>
+                            <option value="cashier" ${u.role === 'cashier' ? 'selected' : ''}>Cashier</option>
+                            <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+                        </select>
+                        <button class="line-icon-btn remove" data-remove-user="${idx}" title="${canDelete ? 'Remove' : 'Cannot remove'}" ${canDelete ? '' : 'disabled style="opacity:0.3;cursor:not-allowed;"'}>✕</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
         function openSettingsModal() {
             taxRateInput.value = settings.taxRate;
             restaurantNameInput.value = settings.restaurantName || 'Restaurant POS';
+            tableCountInput.value = settings.tableCount || 10;
+            tempUsers = JSON.parse(JSON.stringify(USERS));
+            renderUserList();
             settingsModal.classList.add('show');
         }
 
         function saveSettings() {
             const tr = parseFloat(taxRateInput.value);
-            if (isNaN(tr) || tr < 0 || tr > 50) { showToast('Tax 0–50', 'error'); return; }
+            if (isNaN(tr) || tr < 0 || tr > 50) { showToast('Tax must be 0–50', 'error'); return; }
+
+            const tc = parseInt(tableCountInput.value, 10);
+            if (isNaN(tc) || tc < 1 || tc > 50) { showToast('Table count must be 1–50', 'error'); return; }
+
+            // Collect users from list
+            const rows = userList.querySelectorAll('.user-row');
+            const newUsers = [];
+            const seenUsernames = new Set();
+            let hasError = false;
+
+            rows.forEach(row => {
+                const username = row.querySelector('.u-username').value.trim().toLowerCase();
+                const displayName = row.querySelector('.u-display').value.trim() || username;
+                const password = row.querySelector('.u-password').value;
+                const role = row.querySelector('.u-role').value;
+
+                if (!username || !password) {
+                    hasError = true;
+                    return;
+                }
+                if (seenUsernames.has(username)) {
+                    showToast(`Duplicate username: ${username}`, 'error');
+                    hasError = true;
+                    return;
+                }
+                seenUsernames.add(username);
+                newUsers.push({ username, displayName, password, role });
+            });
+
+            if (hasError || newUsers.length === 0) {
+                showToast('Please fix user errors', 'error');
+                return;
+            }
+
+            if (!newUsers.some(u => u.role === 'admin')) {
+                showToast('At least one admin required', 'error');
+                return;
+            }
+
+            // If table count decreased, drop held orders on removed tables
+            const oldCount = settings.tableCount || 10;
+            if (tc < oldCount) {
+                const before = heldOrders.length;
+                heldOrders = heldOrders.filter(h => parseInt(h.tableNumber, 10) <= tc);
+                if (heldOrders.length < before) {
+                    saveToStorage(STORAGE_KEYS.HELD, heldOrders);
+                    updateHeldBadge();
+                    showToast(`${before - heldOrders.length} held order(s) removed (table exceeded new limit)`, 'warn');
+                }
+                if (parseInt(currentTable, 10) > tc) {
+                    currentTable = 1;
+                    currentTableLabel.textContent = 'Table 1';
+                    saveToStorage(STORAGE_KEYS.CURRENT_TABLE, 1);
+                }
+            }
+
+            // Save everything
             settings.taxRate = tr;
             settings.restaurantName = restaurantNameInput.value.trim() || 'Restaurant POS';
+            settings.tableCount = tc;
+            USERS = newUsers;
+
             saveToStorage(STORAGE_KEYS.SETTINGS, settings);
+            saveToStorage(STORAGE_KEYS.USERS, USERS);
+
+            // If current user was updated, refresh badge
+            if (currentUser) {
+                const updated = USERS.find(u => u.username === currentUser.username);
+                if (updated) {
+                    currentUser = updated;
+                    updateUserBadge(updated);
+                    applyRolePermissions(updated.role);
+                    saveSession(updated);
+                }
+            }
+
             settingsModal.classList.remove('show');
             renderOrder();
             showToast('Settings saved', 'success');
@@ -3046,6 +3183,7 @@
         });
         confirmPaymentBtn.addEventListener('click', confirmPayment);
 
+        // Settings
         settingsBtn.addEventListener('click', openSettingsModal);
         cancelSettingsBtn.addEventListener('click', () => settingsModal.classList.remove('show'));
         saveSettingsBtn.addEventListener('click', saveSettings);
@@ -3053,6 +3191,36 @@
             if (e.target === settingsModal) settingsModal.classList.remove('show');
         });
 
+        // User management in settings
+        addUserBtn.addEventListener('click', () => {
+            tempUsers.push({
+                username: '',
+                password: '',
+                displayName: '',
+                role: 'cashier'
+            });
+            renderUserList();
+        });
+
+        userList.addEventListener('click', e => {
+            const btn = e.target.closest('[data-remove-user]');
+            if (!btn) return;
+            if (btn.disabled) return;
+            const idx = parseInt(btn.dataset.removeUser, 10);
+            const u = tempUsers[idx];
+            if (currentUser && u.username === currentUser.username) {
+                showToast("You can't remove your own account", 'error');
+                return;
+            }
+            if (u.role === 'admin' && tempUsers.filter(x => x.role === 'admin').length === 1) {
+                showToast("Can't remove the last admin", 'error');
+                return;
+            }
+            tempUsers.splice(idx, 1);
+            renderUserList();
+        });
+
+        // History
         historyBtn.addEventListener('click', () => { renderHistory(); historyModal.classList.add('show'); });
         closeHistoryBtn.addEventListener('click', () => historyModal.classList.remove('show'));
         clearHistoryBtn.addEventListener('click', clearHistory);
@@ -3061,12 +3229,14 @@
             if (e.target === historyModal) historyModal.classList.remove('show');
         });
 
+        // Analytics
         analyticsBtn.addEventListener('click', () => { renderAnalytics(); analyticsModal.classList.add('show'); });
         closeAnalyticsBtn.addEventListener('click', () => analyticsModal.classList.remove('show'));
         analyticsModal.addEventListener('click', e => {
             if (e.target === analyticsModal) analyticsModal.classList.remove('show');
         });
 
+        // Held orders
         heldOrdersBtn.addEventListener('click', () => { renderHeldOrders(); heldOrdersModal.classList.add('show'); });
         closeHeldOrdersBtn.addEventListener('click', () => heldOrdersModal.classList.remove('show'));
         heldOrdersModal.addEventListener('click', e => {
@@ -3078,6 +3248,7 @@
             resumeHeldOrder(parseInt(btn.dataset.resume, 10));
         });
 
+        // Edit menu
         editMenuBtn.addEventListener('click', openEditMenuModal);
         addMenuItemBtn.addEventListener('click', addNewMenuItem);
         cancelEditMenuBtn.addEventListener('click', () => editMenuModal.classList.remove('show'));
