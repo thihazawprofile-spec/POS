@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Restaurant POS · MMK · Login</title>
+    <title>Restaurant POS · MMK · Backup</title>
     <style>
         * {
             box-sizing: border-box;
@@ -34,7 +34,6 @@
             min-height: 680px;
         }
 
-        /* TOP BAR */
         .top-bar {
             display: flex;
             align-items: center;
@@ -79,19 +78,14 @@
             position: relative;
         }
 
-        .btn-icon:hover {
-            background: #e2e8f0;
-        }
+        .btn-icon:hover { background: #e2e8f0; }
 
         .btn-icon.primary-action {
             background: #3b82f6;
             color: white;
             border-color: #3b82f6;
         }
-
-        .btn-icon.primary-action:hover {
-            background: #2563eb;
-        }
+        .btn-icon.primary-action:hover { background: #2563eb; }
 
         .badge {
             background: #3b82f6;
@@ -103,7 +97,6 @@
             margin-left: 4px;
         }
 
-        /* MAIN GRID */
         .main-grid {
             display: grid;
             grid-template-columns: 1fr 400px;
@@ -111,7 +104,6 @@
             overflow: hidden;
         }
 
-        /* MENU PANEL */
         .menu-panel {
             background: #ffffff;
             display: flex;
@@ -147,16 +139,12 @@
             transition: 0.1s;
             border: 1px solid transparent;
         }
-
         .cat-btn.active {
             background: #0f172a;
             color: white;
             border-color: #0f172a;
         }
-
-        .cat-btn:hover {
-            background: #e2e8f0;
-        }
+        .cat-btn:hover { background: #e2e8f0; }
 
         .menu-filter-toggle {
             display: flex;
@@ -173,7 +161,6 @@
             border: 1px solid #e2e8f0;
             white-space: nowrap;
         }
-
         .menu-filter-toggle input {
             cursor: pointer;
             accent-color: #3b82f6;
@@ -201,17 +188,13 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
             position: relative;
         }
-
         .menu-item:hover:not(.unavailable) {
             border-color: #94a3b8;
             background: #f8fafc;
             transform: translateY(-2px);
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
         }
-
-        .menu-item:active:not(.unavailable) {
-            transform: scale(0.97);
-        }
+        .menu-item:active:not(.unavailable) { transform: scale(0.97); }
 
         .menu-item.unavailable {
             background: #f8fafc;
@@ -221,7 +204,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .menu-item.unavailable .item-name,
         .menu-item.unavailable .item-price,
         .menu-item.unavailable .item-original,
@@ -229,10 +211,7 @@
             filter: grayscale(0.7);
             color: #94a3b8;
         }
-
-        .menu-item.unavailable .item-price {
-            color: #94a3b8;
-        }
+        .menu-item.unavailable .item-price { color: #94a3b8; }
 
         .unavailable-overlay {
             position: absolute;
@@ -256,13 +235,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 8px,
-                rgba(220, 38, 38, 0.04) 8px,
-                rgba(220, 38, 38, 0.04) 16px
-            );
+            background: repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(220, 38, 38, 0.04) 8px, rgba(220, 38, 38, 0.04) 16px);
             border-radius: 18px;
             pointer-events: none;
         }
@@ -274,20 +247,17 @@
             margin-bottom: 4px;
             line-height: 1.3;
         }
-
         .item-price {
             color: #3b82f6;
             font-weight: 700;
             font-size: 1rem;
         }
-
         .item-original {
             font-size: 0.7rem;
             color: #94a3b8;
             text-decoration: line-through;
             margin-top: 2px;
         }
-
         .item-cat {
             font-size: 0.65rem;
             text-transform: uppercase;
@@ -308,7 +278,6 @@
             font-weight: 700;
             z-index: 3;
         }
-
         .item-unavailable-badge {
             position: absolute;
             top: 8px;
@@ -323,7 +292,6 @@
             text-transform: uppercase;
         }
 
-        /* ORDER PANEL */
         .order-panel {
             background: #f8fafc;
             border-left: 1px solid #e2e8f0;
@@ -355,11 +323,7 @@
             gap: 5px;
             transition: 0.12s;
         }
-
-        .table-btn:hover {
-            background: #f1f5f9;
-            border-color: #94a3b8;
-        }
+        .table-btn:hover { background: #f1f5f9; border-color: #94a3b8; }
 
         .item-count-badge {
             font-size: 0.75rem;
@@ -410,7 +374,6 @@
             flex: 1;
             min-width: 0;
         }
-
         .line-name {
             font-weight: 600;
             font-size: 0.85rem;
@@ -419,13 +382,11 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         .line-price {
             font-size: 0.75rem;
             color: #3b82f6;
             font-weight: 500;
         }
-
         .line-discount-tag {
             font-size: 0.65rem;
             color: #b45309;
@@ -436,7 +397,6 @@
             display: inline-block;
             margin-top: 1px;
         }
-
         .line-unavailable-warn {
             font-size: 0.65rem;
             color: #dc2626;
@@ -470,11 +430,7 @@
             cursor: pointer;
             transition: 0.1s;
         }
-
-        .qty-btn:hover {
-            background: #eef2f6;
-            border-color: #94a3b8;
-        }
+        .qty-btn:hover { background: #eef2f6; border-color: #94a3b8; }
 
         .qty-val {
             min-width: 20px;
@@ -493,12 +449,7 @@
             transition: 0.1s;
             border-radius: 4px;
         }
-
-        .line-icon-btn:hover {
-            opacity: 1;
-            background: #f1f5f9;
-        }
-
+        .line-icon-btn:hover { opacity: 1; background: #f1f5f9; }
         .line-icon-btn.remove { color: #ef4444; }
 
         .order-summary {
@@ -514,7 +465,6 @@
             color: #334155;
             margin-bottom: 5px;
         }
-
         .summary-row.total {
             font-weight: 700;
             font-size: 1.25rem;
@@ -523,7 +473,6 @@
             padding-top: 6px;
             border-top: 1px dashed #cbd5e1;
         }
-
         .summary-row.total span:last-child { color: #3b82f6; }
         .summary-row .discount-text { color: #d97706; }
 
@@ -548,7 +497,6 @@
             box-shadow: 0 6px 14px rgba(59, 130, 246, 0.25);
             min-width: 90px;
         }
-
         .btn-primary:hover:not(:disabled) { background: #2563eb; transform: scale(1.01); }
         .btn-primary:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; }
 
@@ -568,7 +516,6 @@
             gap: 4px;
             min-width: 80px;
         }
-
         .btn-secondary:hover:not(:disabled) { background: #f1f5f9; }
         .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -588,11 +535,9 @@
             box-shadow: 0 6px 14px rgba(245, 158, 11, 0.25);
             min-width: 80px;
         }
-
         .btn-hold:hover:not(:disabled) { background: #d97706; }
         .btn-hold:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; }
 
-        /* MODAL */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -604,7 +549,6 @@
             z-index: 1000;
             padding: 16px;
         }
-
         .modal-overlay.show { display: flex; }
 
         .modal-card {
@@ -617,7 +561,6 @@
             padding: 24px;
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
         }
-
         .modal-card.wide { max-width: 1000px; }
         .modal-card.xwide { max-width: 1200px; }
 
@@ -630,7 +573,6 @@
             align-items: center;
             gap: 8px;
         }
-
         .modal-card h3 {
             font-size: 1rem;
             font-weight: 600;
@@ -639,7 +581,6 @@
         }
 
         .setting-group { margin-bottom: 16px; }
-
         .setting-group label {
             display: block;
             font-weight: 600;
@@ -647,7 +588,6 @@
             color: #1e293b;
             margin-bottom: 5px;
         }
-
         .setting-group input,
         .setting-group select {
             width: 100%;
@@ -657,7 +597,6 @@
             font-size: 0.95rem;
             background: #f8fafc;
         }
-
         .setting-group input:focus,
         .setting-group select:focus {
             outline: 2px solid #3b82f6;
@@ -669,7 +608,6 @@
             gap: 10px;
             margin-top: 20px;
         }
-
         .modal-actions button {
             flex: 1;
             padding: 13px;
@@ -679,11 +617,74 @@
             cursor: pointer;
             border: none;
         }
-
         .btn-save { background: #3b82f6; color: white; }
         .btn-save:hover { background: #2563eb; }
         .btn-cancel { background: #e2e8f0; color: #1e293b; }
         .btn-cancel:hover { background: #cbd5e1; }
+
+        /* BACKUP BUTTONS */
+        .backup-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 4px;
+        }
+        .backup-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: 0.12s;
+            text-align: left;
+        }
+        .backup-btn:hover {
+            background: #f1f5f9;
+            border-color: #3b82f6;
+            transform: translateY(-1px);
+        }
+        .backup-btn.danger:hover {
+            background: #fef2f2;
+            border-color: #dc2626;
+        }
+        .backup-btn-icon {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+        .backup-btn-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+        .backup-btn-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #0f172a;
+        }
+        .backup-btn-desc {
+            font-size: 0.72rem;
+            color: #64748b;
+            line-height: 1.3;
+        }
+
+        .storage-info {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #475569;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .storage-info strong { color: #0f172a; }
 
         /* TABLE GRID */
         .table-grid {
@@ -704,26 +705,22 @@
             cursor: pointer;
             transition: 0.12s;
         }
-
         .table-tile:hover {
             background: #e0f2fe;
             border-color: #38bdf8;
             transform: scale(1.03);
         }
-
         .table-tile.selected {
             background: #3b82f6;
             color: white;
             border-color: #2563eb;
             box-shadow: 0 6px 14px rgba(59, 130, 246, 0.3);
         }
-
         .table-tile.occupied {
             background: #fef3c7;
             border-color: #f59e0b;
             color: #92400e;
         }
-
         .table-tile.occupied.selected {
             background: #f59e0b;
             color: white;
@@ -739,14 +736,13 @@
             opacity: 0.7;
         }
 
-        /* PAYMENT MODAL */
+        /* PAYMENT */
         .payment-methods {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-bottom: 16px;
         }
-
         .payment-method {
             background: #f8fafc;
             border: 2px solid #e2e8f0;
@@ -756,19 +752,13 @@
             cursor: pointer;
             transition: 0.12s;
         }
-
-        .payment-method:hover {
-            background: #e0f2fe;
-            border-color: #38bdf8;
-        }
-
+        .payment-method:hover { background: #e0f2fe; border-color: #38bdf8; }
         .payment-method.selected {
             background: #3b82f6;
             color: white;
             border-color: #2563eb;
             box-shadow: 0 6px 14px rgba(59, 130, 246, 0.3);
         }
-
         .payment-method-icon { font-size: 2rem; display: block; margin-bottom: 6px; }
         .payment-method-label { font-weight: 600; font-size: 0.95rem; }
 
@@ -779,7 +769,6 @@
             text-align: center;
             margin-bottom: 16px;
         }
-
         .amount-display .label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 600; }
         .amount-display .value { font-size: 1.8rem; font-weight: 700; color: #0f172a; margin-top: 4px; }
 
@@ -789,7 +778,6 @@
             margin-bottom: 12px;
             flex-wrap: wrap;
         }
-
         .cash-quick {
             background: #f1f5f9;
             border: 1px solid #e2e8f0;
@@ -800,7 +788,6 @@
             cursor: pointer;
             transition: 0.1s;
         }
-
         .cash-quick:hover { background: #e2e8f0; }
 
         .change-display {
@@ -811,7 +798,6 @@
             text-align: center;
             margin-bottom: 12px;
         }
-
         .change-display .label { font-size: 0.8rem; color: #047857; text-transform: uppercase; font-weight: 600; }
         .change-display .value { font-size: 1.5rem; font-weight: 700; color: #065f46; margin-top: 2px; }
 
@@ -828,7 +814,6 @@
             font-weight: 700;
             font-size: 0.95rem;
         }
-
         .history-day-header:first-child { margin-top: 0; }
 
         .history-day-total {
@@ -844,7 +829,6 @@
             font-size: 0.85rem;
             margin-bottom: 8px;
         }
-
         .history-table th {
             text-align: left;
             padding: 8px 6px;
@@ -854,14 +838,12 @@
             font-size: 0.75rem;
             text-transform: uppercase;
         }
-
         .history-table td {
             padding: 8px 6px;
             border-bottom: 1px solid #f1f5f9;
             color: #0f172a;
             vertical-align: top;
         }
-
         .history-table tr:hover { background: #f8fafc; }
 
         .payment-tag {
@@ -872,7 +854,6 @@
             font-weight: 700;
             text-transform: uppercase;
         }
-
         .payment-tag.cash { background: #d1fae5; color: #065f46; }
         .payment-tag.card { background: #dbeafe; color: #1e40af; }
 
@@ -889,7 +870,6 @@
             gap: 10px;
             transition: 0.12s;
         }
-
         .held-order-card:hover { background: #fef3c7; border-color: #f59e0b; }
         .held-order-info { flex: 1; }
         .held-order-table { font-weight: 700; font-size: 1rem; color: #92400e; margin-bottom: 4px; }
@@ -907,10 +887,9 @@
             font-size: 0.8rem;
             cursor: pointer;
         }
-
         .btn-resume:hover { background: #2563eb; }
 
-        /* EDIT MENU ROW */
+        /* EDIT MENU */
         .edit-item-row {
             display: grid;
             grid-template-columns: 1.6fr 0.8fr 0.9fr 0.7fr 0.7fr 0.6fr auto;
@@ -923,12 +902,10 @@
             margin-bottom: 8px;
             transition: 0.12s;
         }
-
         .edit-item-row.unavailable-row {
             background: #fef2f2;
             border-color: #fca5a5;
         }
-
         .edit-item-row input,
         .edit-item-row select {
             padding: 7px 8px;
@@ -938,15 +915,8 @@
             min-width: 0;
             background: white;
         }
-
-        .edit-item-row input.disc-amt {
-            border-color: #fde68a;
-            background: #fffbeb;
-        }
-        .edit-item-row input.disc-pct {
-            border-color: #a7f3d0;
-            background: #ecfdf5;
-        }
+        .edit-item-row input.disc-amt { border-color: #fde68a; background: #fffbeb; }
+        .edit-item-row input.disc-pct { border-color: #a7f3d0; background: #ecfdf5; }
         .edit-item-row select { cursor: pointer; }
 
         .avail-toggle {
@@ -957,14 +927,12 @@
             cursor: pointer;
             user-select: none;
         }
-
         .avail-toggle input {
             width: auto;
             cursor: pointer;
             accent-color: #059669;
             transform: scale(1.15);
         }
-
         .avail-toggle .avail-label {
             font-size: 0.6rem;
             font-weight: 700;
@@ -972,12 +940,9 @@
             color: #64748b;
             letter-spacing: 0.5px;
         }
+        .avail-toggle input:not(:checked) ~ .avail-label { color: #dc2626; }
 
-        .avail-toggle input:not(:checked) ~ .avail-label {
-            color: #dc2626;
-        }
-
-        /* USER MANAGEMENT ROW */
+        /* USER ROW */
         .user-row {
             display: grid;
             grid-template-columns: 1.2fr 1.2fr 1.2fr 1fr auto;
@@ -989,7 +954,6 @@
             padding: 10px;
             margin-bottom: 8px;
         }
-
         .user-row input,
         .user-row select {
             padding: 8px 10px;
@@ -998,13 +962,8 @@
             font-size: 0.85rem;
             background: white;
         }
-
         .user-row select { cursor: pointer; }
-
-        .user-row.self-row {
-            background: #fef9c3;
-            border-color: #fcd34d;
-        }
+        .user-row.self-row { background: #fef9c3; border-color: #fcd34d; }
 
         /* ANALYTICS */
         .analytics-grid {
@@ -1012,14 +971,12 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 16px;
         }
-
         .analytics-card {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 16px;
             padding: 16px;
         }
-
         .analytics-card h3 {
             margin: 0 0 12px 0;
             font-size: 0.9rem;
@@ -1031,10 +988,7 @@
             align-items: center;
             gap: 6px;
         }
-
-        .analytics-card.full-width {
-            grid-column: 1 / -1;
-        }
+        .analytics-card.full-width { grid-column: 1 / -1; }
 
         .kpi-grid {
             display: grid;
@@ -1042,7 +996,6 @@
             gap: 10px;
             margin-bottom: 16px;
         }
-
         .kpi-tile {
             background: white;
             border: 1px solid #e2e8f0;
@@ -1050,7 +1003,6 @@
             padding: 14px;
             text-align: center;
         }
-
         .kpi-tile .kpi-label {
             font-size: 0.7rem;
             text-transform: uppercase;
@@ -1059,13 +1011,7 @@
             letter-spacing: 0.5px;
             margin-bottom: 4px;
         }
-
-        .kpi-tile .kpi-value {
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: #0f172a;
-        }
-
+        .kpi-tile .kpi-value { font-size: 1.4rem; font-weight: 800; color: #0f172a; }
         .kpi-tile .kpi-value.blue { color: #3b82f6; }
         .kpi-tile .kpi-value.green { color: #059669; }
         .kpi-tile .kpi-value.orange { color: #d97706; }
@@ -1079,7 +1025,6 @@
             padding: 8px 0;
             border-bottom: 1px solid #e2e8f0;
         }
-
         .bar-wrapper {
             flex: 1;
             display: flex;
@@ -1089,7 +1034,6 @@
             height: 100%;
             justify-content: flex-end;
         }
-
         .bar {
             width: 100%;
             max-width: 40px;
@@ -1099,14 +1043,12 @@
             transition: 0.2s;
             position: relative;
         }
-
         .bar-value {
             font-size: 0.6rem;
             font-weight: 700;
             color: #334155;
             white-space: nowrap;
         }
-
         .bar-label {
             font-size: 0.65rem;
             color: #64748b;
@@ -1123,13 +1065,7 @@
             flex-direction: column;
             gap: 8px;
         }
-
-        .top-item-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .top-item-row { display: flex; align-items: center; gap: 10px; }
         .top-item-rank {
             width: 24px;
             height: 24px;
@@ -1143,11 +1079,9 @@
             font-weight: 800;
             flex-shrink: 0;
         }
-
         .top-item-row:nth-child(1) .top-item-rank { background: #fbbf24; color: #78350f; }
         .top-item-row:nth-child(2) .top-item-rank { background: #cbd5e1; color: #334155; }
         .top-item-row:nth-child(3) .top-item-rank { background: #fcd34d; color: #78350f; }
-
         .top-item-name {
             flex: 1;
             font-size: 0.85rem;
@@ -1157,7 +1091,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         .top-item-bar {
             flex: 2;
             height: 8px;
@@ -1165,13 +1098,11 @@
             border-radius: 10px;
             overflow: hidden;
         }
-
         .top-item-bar-fill {
             height: 100%;
             background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
             border-radius: 10px;
         }
-
         .top-item-value {
             font-size: 0.8rem;
             font-weight: 700;
@@ -1180,25 +1111,14 @@
             flex-shrink: 0;
         }
 
-        .category-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
+        .category-list { display: flex; flex-direction: column; gap: 10px; }
         .category-row {
             display: flex;
             align-items: center;
             gap: 10px;
             font-size: 0.85rem;
         }
-
-        .category-name {
-            flex: 1;
-            font-weight: 600;
-            color: #0f172a;
-        }
-
+        .category-name { flex: 1; font-weight: 600; color: #0f172a; }
         .category-bar {
             flex: 2;
             height: 10px;
@@ -1206,13 +1126,11 @@
             border-radius: 10px;
             overflow: hidden;
         }
-
         .category-bar-fill {
             height: 100%;
             background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
             border-radius: 10px;
         }
-
         .category-value {
             font-size: 0.8rem;
             font-weight: 700;
@@ -1250,19 +1168,16 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         .toast.show { opacity: 1; }
         .toast.error { background: #dc2626; }
         .toast.success { background: #059669; }
         .toast.warn { background: #d97706; }
 
-        /* SCROLLBARS */
         .menu-scroll::-webkit-scrollbar,
         .order-list::-webkit-scrollbar,
         .modal-card::-webkit-scrollbar {
             width: 5px;
         }
-
         .menu-scroll::-webkit-scrollbar-thumb,
         .order-list::-webkit-scrollbar-thumb,
         .modal-card::-webkit-scrollbar-thumb {
@@ -1270,7 +1185,7 @@
             border-radius: 10px;
         }
 
-        /* ========== LOGIN SCREEN ========== */
+        /* LOGIN */
         .login-screen {
             position: fixed;
             inset: 0;
@@ -1292,19 +1207,13 @@
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
             text-align: center;
         }
-
-        .login-card .login-logo {
-            font-size: 3rem;
-            margin-bottom: 8px;
-        }
-
+        .login-card .login-logo { font-size: 3rem; margin-bottom: 8px; }
         .login-card h1 {
             font-size: 1.6rem;
             font-weight: 700;
             color: #0f172a;
             margin-bottom: 6px;
         }
-
         .login-card p.subtitle {
             color: #64748b;
             font-size: 0.9rem;
@@ -1315,7 +1224,6 @@
             text-align: left;
             margin-bottom: 16px;
         }
-
         .login-field label {
             display: block;
             font-weight: 600;
@@ -1325,7 +1233,6 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
         .login-field input {
             width: 100%;
             padding: 13px 16px;
@@ -1335,7 +1242,6 @@
             background: #f8fafc;
             transition: 0.15s;
         }
-
         .login-field input:focus {
             outline: 2px solid #3b82f6;
             border-color: transparent;
@@ -1352,7 +1258,6 @@
             margin-bottom: 14px;
             display: none;
         }
-
         .login-error.show { display: block; }
 
         .login-btn {
@@ -1368,7 +1273,6 @@
             transition: 0.15s;
             box-shadow: 0 6px 14px rgba(59, 130, 246, 0.3);
         }
-
         .login-btn:hover { background: #2563eb; transform: scale(1.01); }
         .login-btn:active { transform: scale(0.98); }
 
@@ -1387,7 +1291,6 @@
             cursor: pointer;
             transition: 0.15s;
         }
-
         .user-badge:hover { background: #e2e8f0; }
 
         .user-avatar {
@@ -1414,7 +1317,6 @@
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
-
         .user-role-tag.admin { background: #fef3c7; color: #92400e; }
 
         @keyframes shake {
@@ -1423,39 +1325,19 @@
             75% { transform: translateX(8px); }
         }
 
-        /* RESPONSIVE */
         @media (max-width: 900px) {
-            .pos-app {
-                height: auto;
-                min-height: 100vh;
-                border-radius: 0;
-                max-width: 100%;
-            }
-            .main-grid {
-                grid-template-columns: 1fr;
-                overflow: visible;
-            }
-            .menu-panel {
-                border-radius: 0;
-                max-height: 50vh;
-            }
-            .order-panel {
-                border-left: none;
-                border-top: 1px solid #e2e8f0;
-            }
+            .pos-app { height: auto; min-height: 100vh; border-radius: 0; max-width: 100%; }
+            .main-grid { grid-template-columns: 1fr; overflow: visible; }
+            .menu-panel { border-radius: 0; max-height: 50vh; }
+            .order-panel { border-left: none; border-top: 1px solid #e2e8f0; }
             .order-list { max-height: 200px; }
             body { padding: 0; background: #f1f5f9; }
             .analytics-grid { grid-template-columns: 1fr; }
             .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-            .edit-item-row {
-                grid-template-columns: 1fr 1fr 1fr;
-                grid-template-rows: auto auto auto;
-            }
+            .edit-item-row { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto; }
             .edit-item-row input.name-input { grid-column: 1 / -1; }
-            .user-row {
-                grid-template-columns: 1fr 1fr;
-                grid-template-rows: auto auto auto;
-            }
+            .user-row { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto auto; }
+            .backup-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 480px) {
@@ -1494,7 +1376,6 @@
 
 <!-- ========== POS APP ========== -->
 <div class="pos-app">
-    <!-- TOP BAR -->
     <div class="top-bar">
         <div class="logo">
             <span>🍽️</span> POS <span style="font-weight:400;font-size:0.8rem;color:#64748b;">MMK</span>
@@ -1513,9 +1394,7 @@
         </div>
     </div>
 
-    <!-- MAIN GRID -->
     <div class="main-grid">
-        <!-- MENU PANEL -->
         <div class="menu-panel">
             <div class="menu-header">
                 <div class="category-tabs" id="categoryTabs"></div>
@@ -1529,7 +1408,6 @@
             </div>
         </div>
 
-        <!-- ORDER PANEL -->
         <div class="order-panel">
             <div class="order-header">
                 <button class="table-btn" id="tableSelectBtn">🪑 <span id="currentTableLabel">Table 1</span></button>
@@ -1621,7 +1499,7 @@
     </div>
 </div>
 
-<!-- SETTINGS MODAL (with Table Count + User Management) -->
+<!-- SETTINGS MODAL (with Table Count + User Management + BACKUP) -->
 <div class="modal-overlay" id="settingsModal">
     <div class="modal-card wide">
         <h2>⚙️ Settings</h2>
@@ -1642,6 +1520,42 @@
             <p style="font-size:0.75rem;color:#64748b;margin-top:4px;">If you reduce this, held orders on removed tables will be lost.</p>
         </div>
 
+        <!-- ========== BACKUP SECTION ========== -->
+        <h3 style="margin-top:24px;border-top:1px solid #e2e8f0;padding-top:20px;">💾 Backup & Restore</h3>
+        <p style="font-size:0.8rem;color:#64748b;margin-bottom:12px;">
+            Export a backup file regularly to protect your data. If you ever lose data (browser cache cleared, new device), import the backup to restore everything.
+        </p>
+        <div class="backup-grid">
+            <button class="backup-btn" id="exportBackupBtn" type="button">
+                <div class="backup-btn-icon">📥</div>
+                <div class="backup-btn-text">
+                    <div class="backup-btn-title">Export Backup</div>
+                    <div class="backup-btn-desc">Download all data as a .json file</div>
+                </div>
+            </button>
+            <button class="backup-btn" id="importBackupBtn" type="button">
+                <div class="backup-btn-icon">📤</div>
+                <div class="backup-btn-text">
+                    <div class="backup-btn-title">Import Backup</div>
+                    <div class="backup-btn-desc">Restore data from a backup file</div>
+                </div>
+            </button>
+        </div>
+        <div class="storage-info">
+            <span>📊 Storage used: <strong id="storageSize">— KB</strong></span>
+            <span>🍽️ Menu: <strong id="storageMenu">0</strong></span>
+            <span>📈 Sales: <strong id="storageSales">0</strong></span>
+            <span>⏸️ Held: <strong id="storageHeld">0</strong></span>
+        </div>
+        <button class="backup-btn danger" id="resetAllBtn" type="button" style="width:100%;margin-top:10px;">
+            <div class="backup-btn-icon">🗑️</div>
+            <div class="backup-btn-text">
+                <div class="backup-btn-title">Reset to Factory Defaults</div>
+                <div class="backup-btn-desc">Delete ALL data (menu, sales, users, settings). Cannot be undone!</div>
+            </div>
+        </button>
+
+        <!-- ========== USERS SECTION ========== -->
         <h3 style="margin-top:24px;border-top:1px solid #e2e8f0;padding-top:20px;">👥 User Accounts</h3>
         <p style="font-size:0.8rem;color:#64748b;margin-bottom:12px;">
             Manage cashier accounts. You cannot delete your own logged-in account.
@@ -1652,6 +1566,49 @@
         <div class="modal-actions" style="margin-top:24px;">
             <button class="btn-cancel" id="cancelSettings">Cancel</button>
             <button class="btn-save" id="saveSettings">Save All Settings</button>
+        </div>
+    </div>
+</div>
+
+<!-- IMPORT BACKUP CONFIRM MODAL -->
+<div class="modal-overlay" id="importConfirmModal">
+    <div class="modal-card" style="max-width:420px;text-align:center;">
+        <h2 style="justify-content:center;">📤 Import Backup?</h2>
+        <div id="importPreview" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;text-align:left;font-size:0.85rem;margin:12px 0;line-height:1.7;"></div>
+        <p style="color:#dc2626;font-size:0.85rem;font-weight:600;margin-top:8px;">
+            ⚠️ This will REPLACE all current data.
+        </p>
+        <p style="color:#64748b;font-size:0.8rem;margin-top:4px;">
+            Your current menu, sales, users, and settings will be overwritten. Export a backup first if unsure.
+        </p>
+        <div class="modal-actions" style="margin-top:20px;">
+            <button class="btn-cancel" id="cancelImport">Cancel</button>
+            <button class="btn-save" id="confirmImport" style="background:#dc2626;">Yes, Replace Everything</button>
+        </div>
+    </div>
+</div>
+
+<!-- RESET CONFIRM MODAL -->
+<div class="modal-overlay" id="resetConfirmModal">
+    <div class="modal-card" style="max-width:420px;text-align:center;">
+        <h2 style="justify-content:center;">🗑️ Reset Everything?</h2>
+        <p style="color:#dc2626;font-size:0.9rem;font-weight:600;margin-top:12px;">
+            This will permanently delete:
+        </p>
+        <ul style="text-align:left;font-size:0.85rem;color:#475569;margin:12px 0 12px 24px;line-height:1.8;">
+            <li>All menu items</li>
+            <li>All sales history</li>
+            <li>All held orders</li>
+            <li>All user accounts (resets to defaults)</li>
+            <li>All settings</li>
+        </ul>
+        <p style="color:#64748b;font-size:0.8rem;">
+            Type <strong>RESET</strong> below to confirm.
+        </p>
+        <input type="text" id="resetConfirmInput" placeholder="Type RESET here" style="width:100%;padding:12px;border-radius:12px;border:1px solid #cbd5e1;font-size:0.95rem;margin-top:8px;text-align:center;font-weight:700;letter-spacing:2px;">
+        <div class="modal-actions" style="margin-top:16px;">
+            <button class="btn-cancel" id="cancelReset">Cancel</button>
+            <button class="btn-save" id="confirmReset" style="background:#dc2626;" disabled>Confirm Reset</button>
         </div>
     </div>
 </div>
@@ -1750,8 +1707,10 @@
             USERS: 'pos_mmk_users_v7'
         };
 
+        const BACKUP_FORMAT = 'pos-mmk-backup';
+        const BACKUP_VERSION = 1;
+
         // ==================== DEFAULT USERS ====================
-        // ⚠️ Change these passwords before deploying!
         const DEFAULT_USERS = [
             { username: 'admin',   password: 'admin123',   displayName: 'Administrator', role: 'admin'   },
             { username: 'cashier', password: 'cashier123', displayName: 'Cashier',       role: 'cashier' }
@@ -1824,6 +1783,7 @@
         let tempUsers = [];
         let selectedPaymentMethod = null;
         let currentUser = null;
+        let pendingImportData = null;
 
         MENU_ITEMS = MENU_ITEMS.map(item => ({
             ...item,
@@ -1836,7 +1796,6 @@
         if (!settings.restaurantName) settings.restaurantName = 'Restaurant POS';
         if (!settings.tableCount || settings.tableCount < 1) settings.tableCount = 10;
 
-        // Ensure USERS has at least one admin
         if (!USERS || USERS.length === 0) USERS = DEFAULT_USERS;
         if (!USERS.some(u => u.role === 'admin')) {
             USERS.unshift({ username: 'admin', password: 'admin123', displayName: 'Administrator', role: 'admin' });
@@ -1874,6 +1833,8 @@
         const heldOrdersModal = document.getElementById('heldOrdersModal');
         const editMenuModal = document.getElementById('editMenuModal');
         const logoutConfirmModal = document.getElementById('logoutConfirmModal');
+        const importConfirmModal = document.getElementById('importConfirmModal');
+        const resetConfirmModal = document.getElementById('resetConfirmModal');
 
         const tableGrid = document.getElementById('tableGrid');
         const cancelTableSelectBtn = document.getElementById('cancelTableSelect');
@@ -1895,6 +1856,21 @@
         const addUserBtn = document.getElementById('addUserBtn');
         const saveSettingsBtn = document.getElementById('saveSettings');
         const cancelSettingsBtn = document.getElementById('cancelSettings');
+
+        // Backup DOM
+        const exportBackupBtn = document.getElementById('exportBackupBtn');
+        const importBackupBtn = document.getElementById('importBackupBtn');
+        const resetAllBtn = document.getElementById('resetAllBtn');
+        const storageSize = document.getElementById('storageSize');
+        const storageMenu = document.getElementById('storageMenu');
+        const storageSales = document.getElementById('storageSales');
+        const storageHeld = document.getElementById('storageHeld');
+        const importPreview = document.getElementById('importPreview');
+        const cancelImportBtn = document.getElementById('cancelImport');
+        const confirmImportBtn = document.getElementById('confirmImport');
+        const resetConfirmInput = document.getElementById('resetConfirmInput');
+        const cancelResetBtn = document.getElementById('cancelReset');
+        const confirmResetBtn = document.getElementById('confirmReset');
 
         const historyContent = document.getElementById('historyContent');
         const closeHistoryBtn = document.getElementById('closeHistory');
@@ -2420,7 +2396,7 @@
             renderOrder();
         }
 
-        // ==================== TABLE SELECTION ====================
+        // ==================== TABLE ====================
         function isTableOccupied(tableNum) {
             return heldOrders.some(h => parseInt(h.tableNumber, 10) === tableNum);
         }
@@ -2462,7 +2438,7 @@
             renderOrder();
         }
 
-        // ==================== HOLD ORDER ====================
+        // ==================== HOLD ====================
         function holdOrder() {
             if (order.length === 0) return;
             if (isTableOccupied(parseInt(currentTable, 10))) {
@@ -2538,7 +2514,7 @@
             showToast(`▶️ Resumed Table ${currentTable}`, 'success');
         }
 
-        // ==================== SALES HISTORY ====================
+        // ==================== HISTORY ====================
         function renderHistory() {
             if (salesHistory.length === 0) {
                 historyContent.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:30px;">No sales yet</p>';
@@ -2658,6 +2634,180 @@
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
             showToast(`Exported ${sorted.length} sales to CSV`, 'success');
+        }
+
+        // ==================== BACKUP / RESTORE ====================
+        function updateStorageInfo() {
+            try {
+                let total = 0;
+                Object.values(STORAGE_KEYS).forEach(k => {
+                    const v = localStorage.getItem(k);
+                    if (v) total += v.length;
+                });
+                storageSize.textContent = (total / 1024).toFixed(2) + ' KB';
+                storageMenu.textContent = MENU_ITEMS.length;
+                storageSales.textContent = salesHistory.length;
+                storageHeld.textContent = heldOrders.length;
+            } catch (e) {
+                storageSize.textContent = '—';
+            }
+        }
+
+        function exportBackup() {
+            const backup = {
+                format: BACKUP_FORMAT,
+                version: BACKUP_VERSION,
+                exportedAt: new Date().toISOString(),
+                exportedBy: currentUser ? currentUser.username : 'unknown',
+                data: {
+                    menu: MENU_ITEMS,
+                    settings: settings,
+                    salesHistory: salesHistory,
+                    heldOrders: heldOrders,
+                    nextHeldId: nextHeldId,
+                    currentTable: currentTable,
+                    hideUnavailable: hideUnavailable,
+                    users: USERS
+                }
+            };
+
+            const json = JSON.stringify(backup, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const now = new Date();
+            const ts = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+            link.href = url;
+            link.setAttribute('download', `pos_backup_${ts}.json`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showToast(`✅ Backup exported (${MENU_ITEMS.length} items, ${salesHistory.length} sales)`, 'success', 3500);
+        }
+
+        function handleImportFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const backup = JSON.parse(e.target.result);
+                    if (!backup || backup.format !== BACKUP_FORMAT) {
+                        showToast('Invalid backup file format', 'error');
+                        return;
+                    }
+                    if (!backup.data) {
+                        showToast('Backup file is missing data', 'error');
+                        return;
+                    }
+                    // Store for confirmation step
+                    pendingImportData = backup;
+                    // Show preview
+                    const d = backup.data;
+                    const exportedAt = backup.exportedAt ? new Date(backup.exportedAt).toLocaleString() : '—';
+                    importPreview.innerHTML = `
+                        <div><strong>Exported:</strong> ${escapeHtml(exportedAt)}</div>
+                        <div><strong>By:</strong> ${escapeHtml(backup.exportedBy || '—')}</div>
+                        <hr style="border:none;border-top:1px solid #e2e8f0;margin:8px 0;">
+                        <div>🍽️ Menu items: <strong>${(d.menu || []).length}</strong></div>
+                        <div>📈 Sales records: <strong>${(d.salesHistory || []).length}</strong></div>
+                        <div>⏸️ Held orders: <strong>${(d.heldOrders || []).length}</strong></div>
+                        <div>👥 Users: <strong>${(d.users || []).length}</strong></div>
+                        <div>🏪 Restaurant: <strong>${escapeHtml(d.settings?.restaurantName || '—')}</strong></div>
+                        <div>📊 Tax rate: <strong>${d.settings?.taxRate ?? '—'}%</strong></div>
+                        <div>🪑 Tables: <strong>${d.settings?.tableCount ?? '—'}</strong></div>
+                    `;
+                    importConfirmModal.classList.add('show');
+                } catch (err) {
+                    console.error(err);
+                    showToast('Failed to read backup file', 'error');
+                }
+            };
+            reader.onerror = () => showToast('Failed to read file', 'error');
+            reader.readAsText(file);
+        }
+
+        function applyImport() {
+            if (!pendingImportData) return;
+            const d = pendingImportData.data;
+
+            // Apply all data
+            if (Array.isArray(d.menu)) MENU_ITEMS = d.menu.map(item => ({
+                ...item,
+                discountAmount: item.discountAmount || 0,
+                discountPercent: item.discountPercent || 0,
+                available: item.available !== false
+            }));
+            if (d.settings) settings = { ...DEFAULT_SETTINGS, ...d.settings };
+            if (Array.isArray(d.salesHistory)) salesHistory = d.salesHistory;
+            if (Array.isArray(d.heldOrders)) heldOrders = d.heldOrders;
+            if (typeof d.nextHeldId === 'number') nextHeldId = d.nextHeldId;
+            if (typeof d.currentTable === 'number') currentTable = d.currentTable;
+            if (typeof d.hideUnavailable === 'boolean') hideUnavailable = d.hideUnavailable;
+            if (Array.isArray(d.users) && d.users.length > 0) USERS = d.users;
+
+            // Save all
+            saveToStorage(STORAGE_KEYS.MENU, MENU_ITEMS);
+            saveToStorage(STORAGE_KEYS.SETTINGS, settings);
+            saveToStorage(STORAGE_KEYS.HISTORY, salesHistory);
+            saveToStorage(STORAGE_KEYS.HELD, heldOrders);
+            saveToStorage(STORAGE_KEYS.NEXT_HELD_ID, nextHeldId);
+            saveToStorage(STORAGE_KEYS.CURRENT_TABLE, currentTable);
+            saveToStorage(STORAGE_KEYS.HIDE_UNAVAILABLE, hideUnavailable);
+            saveToStorage(STORAGE_KEYS.USERS, USERS);
+
+            // Reset UI state
+            order = [];
+            currentCategory = 'All';
+            pendingImportData = null;
+
+            // Re-render everything
+            renderCategories();
+            renderMenuItems();
+            renderOrder();
+            updateHeldBadge();
+            currentTableLabel.textContent = `Table ${currentTable}`;
+            hideUnavailableToggle.checked = hideUnavailable;
+
+            // Close all modals
+            importConfirmModal.classList.remove('show');
+            settingsModal.classList.remove('show');
+
+            // Re-check current user (in case their account changed)
+            if (currentUser) {
+                const updated = USERS.find(u => u.username === currentUser.username);
+                if (updated) {
+                    currentUser = updated;
+                    updateUserBadge(updated);
+                    applyRolePermissions(updated.role);
+                } else {
+                    // Current user no longer exists — force logout
+                    showToast('Your account is not in the backup. Please sign in again.', 'warn', 4000);
+                    handleLogout();
+                    return;
+                }
+            }
+
+            showToast(`✅ Backup restored: ${MENU_ITEMS.length} items, ${salesHistory.length} sales`, 'success', 4000);
+        }
+
+        function openResetConfirm() {
+            resetConfirmInput.value = '';
+            confirmResetBtn.disabled = true;
+            resetConfirmModal.classList.add('show');
+            setTimeout(() => resetConfirmInput.focus(), 200);
+        }
+
+        function applyReset() {
+            // Clear all storage
+            Object.values(STORAGE_KEYS).forEach(k => {
+                try { localStorage.removeItem(k); } catch (e) {}
+            });
+            try { sessionStorage.removeItem(STORAGE_KEYS.SESSION); } catch (e) {}
+
+            // Reload to start fresh
+            showToast('🔄 Resetting...', 'success');
+            setTimeout(() => window.location.reload(), 800);
         }
 
         // ==================== ANALYTICS ====================
@@ -2895,7 +3045,7 @@
             `;
         }
 
-        // ==================== SETTINGS (with Tables + Users) ====================
+        // ==================== SETTINGS ====================
         function renderUserList() {
             if (tempUsers.length === 0) {
                 userList.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:12px;">No users</p>';
@@ -2926,6 +3076,7 @@
             tableCountInput.value = settings.tableCount || 10;
             tempUsers = JSON.parse(JSON.stringify(USERS));
             renderUserList();
+            updateStorageInfo();
             settingsModal.classList.add('show');
         }
 
@@ -2936,7 +3087,6 @@
             const tc = parseInt(tableCountInput.value, 10);
             if (isNaN(tc) || tc < 1 || tc > 50) { showToast('Table count must be 1–50', 'error'); return; }
 
-            // Collect users from list
             const rows = userList.querySelectorAll('.user-row');
             const newUsers = [];
             const seenUsernames = new Set();
@@ -2948,10 +3098,7 @@
                 const password = row.querySelector('.u-password').value;
                 const role = row.querySelector('.u-role').value;
 
-                if (!username || !password) {
-                    hasError = true;
-                    return;
-                }
+                if (!username || !password) { hasError = true; return; }
                 if (seenUsernames.has(username)) {
                     showToast(`Duplicate username: ${username}`, 'error');
                     hasError = true;
@@ -2971,7 +3118,6 @@
                 return;
             }
 
-            // If table count decreased, drop held orders on removed tables
             const oldCount = settings.tableCount || 10;
             if (tc < oldCount) {
                 const before = heldOrders.length;
@@ -2988,7 +3134,6 @@
                 }
             }
 
-            // Save everything
             settings.taxRate = tr;
             settings.restaurantName = restaurantNameInput.value.trim() || 'Restaurant POS';
             settings.tableCount = tc;
@@ -2997,7 +3142,6 @@
             saveToStorage(STORAGE_KEYS.SETTINGS, settings);
             saveToStorage(STORAGE_KEYS.USERS, USERS);
 
-            // If current user was updated, refresh badge
             if (currentUser) {
                 const updated = USERS.find(u => u.username === currentUser.username);
                 if (updated) {
@@ -3191,7 +3335,6 @@
             if (e.target === settingsModal) settingsModal.classList.remove('show');
         });
 
-        // User management in settings
         addUserBtn.addEventListener('click', () => {
             tempUsers.push({
                 username: '',
@@ -3218,6 +3361,41 @@
             }
             tempUsers.splice(idx, 1);
             renderUserList();
+        });
+
+        // Backup buttons
+        exportBackupBtn.addEventListener('click', exportBackup);
+        importBackupBtn.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json,application/json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) handleImportFile(file);
+            };
+            input.click();
+        });
+        cancelImportBtn.addEventListener('click', () => {
+            importConfirmModal.classList.remove('show');
+            pendingImportData = null;
+        });
+        confirmImportBtn.addEventListener('click', applyImport);
+        importConfirmModal.addEventListener('click', e => {
+            if (e.target === importConfirmModal) {
+                importConfirmModal.classList.remove('show');
+                pendingImportData = null;
+            }
+        });
+
+        // Reset
+        resetAllBtn.addEventListener('click', openResetConfirm);
+        cancelResetBtn.addEventListener('click', () => resetConfirmModal.classList.remove('show'));
+        resetConfirmInput.addEventListener('input', (e) => {
+            confirmResetBtn.disabled = e.target.value.trim().toUpperCase() !== 'RESET';
+        });
+        confirmResetBtn.addEventListener('click', applyReset);
+        resetConfirmModal.addEventListener('click', e => {
+            if (e.target === resetConfirmModal) resetConfirmModal.classList.remove('show');
         });
 
         // History
