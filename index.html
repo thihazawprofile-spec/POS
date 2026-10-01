@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Restaurant POS · MMK · Backup</title>
+    <title>Restaurant POS · MMK · Cloud</title>
     <style>
         * {
             box-sizing: border-box;
@@ -77,7 +77,6 @@
             border: 1px solid #e2e8f0;
             position: relative;
         }
-
         .btn-icon:hover { background: #e2e8f0; }
 
         .btn-icon.primary-action {
@@ -95,6 +94,67 @@
             border-radius: 30px;
             font-weight: 700;
             margin-left: 4px;
+        }
+
+        /* CLOUD STATUS BADGE */
+        .cloud-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 30px;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+            user-select: none;
+            white-space: nowrap;
+        }
+        .cloud-badge:hover { background: #e2e8f0; }
+
+        .cloud-badge.cloud-synced {
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+            color: #065f46;
+        }
+        .cloud-badge.cloud-pending {
+            background: #fef3c7;
+            border-color: #fde68a;
+            color: #92400e;
+        }
+        .cloud-badge.cloud-error {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #b91c1c;
+        }
+        .cloud-badge.cloud-syncing {
+            background: #dbeafe;
+            border-color: #93c5fd;
+            color: #1e40af;
+        }
+        .cloud-badge.cloud-off {
+            background: #f1f5f9;
+            border-color: #e2e8f0;
+            color: #64748b;
+        }
+
+        .cloud-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #94a3b8;
+        }
+        .cloud-synced .cloud-dot { background: #10b981; }
+        .cloud-pending .cloud-dot { background: #f59e0b; }
+        .cloud-error .cloud-dot { background: #dc2626; }
+        .cloud-syncing .cloud-dot { background: #3b82f6; animation: pulse 1s infinite; }
+        .cloud-off .cloud-dot { background: #94a3b8; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
 
         .main-grid {
@@ -602,6 +662,12 @@
             outline: 2px solid #3b82f6;
             border-color: transparent;
         }
+        .setting-group .hint {
+            font-size: 0.72rem;
+            color: #64748b;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
 
         .modal-actions {
             display: flex;
@@ -622,7 +688,77 @@
         .btn-cancel { background: #e2e8f0; color: #1e293b; }
         .btn-cancel:hover { background: #cbd5e1; }
 
-        /* BACKUP BUTTONS */
+        /* CLOUD UPLOAD SECTION */
+        .cloud-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-top: 4px;
+        }
+        .cloud-toggle-label {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .cloud-toggle-label strong { font-size: 0.9rem; color: #0f172a; }
+        .cloud-toggle-label span { font-size: 0.75rem; color: #64748b; }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            background: #cbd5e1;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+        .toggle-switch.on { background: #10b981; }
+        .toggle-switch.on::after { left: 25px; }
+
+        .test-btn {
+            width: 100%;
+            padding: 11px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: 1px solid #3b82f6;
+            background: white;
+            color: #3b82f6;
+            margin-top: 6px;
+            transition: 0.15s;
+        }
+        .test-btn:hover { background: #eff6ff; }
+        .test-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .test-result {
+            margin-top: 8px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            display: none;
+        }
+        .test-result.show { display: block; }
+        .test-result.ok { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .test-result.fail { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+
         .backup-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -650,26 +786,10 @@
             background: #fef2f2;
             border-color: #dc2626;
         }
-        .backup-btn-icon {
-            font-size: 1.8rem;
-            flex-shrink: 0;
-        }
-        .backup-btn-text {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            min-width: 0;
-        }
-        .backup-btn-title {
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: #0f172a;
-        }
-        .backup-btn-desc {
-            font-size: 0.72rem;
-            color: #64748b;
-            line-height: 1.3;
-        }
+        .backup-btn-icon { font-size: 1.8rem; flex-shrink: 0; }
+        .backup-btn-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+        .backup-btn-title { font-weight: 700; font-size: 0.9rem; color: #0f172a; }
+        .backup-btn-desc { font-size: 0.72rem; color: #64748b; line-height: 1.3; }
 
         .storage-info {
             background: #f1f5f9;
@@ -686,13 +806,11 @@
         }
         .storage-info strong { color: #0f172a; }
 
-        /* TABLE GRID */
         .table-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 10px;
         }
-
         .table-tile {
             background: #f8fafc;
             border: 2px solid #e2e8f0;
@@ -726,7 +844,6 @@
             color: white;
             border-color: #d97706;
         }
-
         .table-tile-label {
             font-size: 0.6rem;
             text-transform: uppercase;
@@ -736,7 +853,6 @@
             opacity: 0.7;
         }
 
-        /* PAYMENT */
         .payment-methods {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -801,7 +917,6 @@
         .change-display .label { font-size: 0.8rem; color: #047857; text-transform: uppercase; font-weight: 600; }
         .change-display .value { font-size: 1.5rem; font-weight: 700; color: #065f46; margin-top: 2px; }
 
-        /* HISTORY */
         .history-day-header {
             background: #0f172a;
             color: white;
@@ -815,7 +930,6 @@
             font-size: 0.95rem;
         }
         .history-day-header:first-child { margin-top: 0; }
-
         .history-day-total {
             background: rgba(255,255,255,0.15);
             padding: 4px 12px;
@@ -857,7 +971,18 @@
         .payment-tag.cash { background: #d1fae5; color: #065f46; }
         .payment-tag.card { background: #dbeafe; color: #1e40af; }
 
-        /* HELD ORDERS */
+        .upload-tag {
+            display: inline-block;
+            padding: 1px 6px;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-left: 4px;
+        }
+        .upload-tag.synced { background: #d1fae5; color: #065f46; }
+        .upload-tag.pending { background: #fef3c7; color: #92400e; }
+
         .held-order-card {
             background: #fffbeb;
             border: 1px solid #fde68a;
@@ -889,7 +1014,6 @@
         }
         .btn-resume:hover { background: #2563eb; }
 
-        /* EDIT MENU */
         .edit-item-row {
             display: grid;
             grid-template-columns: 1.6fr 0.8fr 0.9fr 0.7fr 0.7fr 0.6fr auto;
@@ -942,7 +1066,6 @@
         }
         .avail-toggle input:not(:checked) ~ .avail-label { color: #dc2626; }
 
-        /* USER ROW */
         .user-row {
             display: grid;
             grid-template-columns: 1.2fr 1.2fr 1.2fr 1fr auto;
@@ -965,7 +1088,6 @@
         .user-row select { cursor: pointer; }
         .user-row.self-row { background: #fef9c3; border-color: #fcd34d; }
 
-        /* ANALYTICS */
         .analytics-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -1041,7 +1163,6 @@
             border-radius: 6px 6px 0 0;
             min-height: 2px;
             transition: 0.2s;
-            position: relative;
         }
         .bar-value {
             font-size: 0.6rem;
@@ -1060,11 +1181,7 @@
             text-align: center;
         }
 
-        .top-items-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+        .top-items-list { display: flex; flex-direction: column; gap: 8px; }
         .top-item-row { display: flex; align-items: center; gap: 10px; }
         .top-item-rank {
             width: 24px;
@@ -1146,7 +1263,6 @@
             font-size: 0.9rem;
         }
 
-        /* TOAST */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -1185,7 +1301,6 @@
             border-radius: 10px;
         }
 
-        /* LOGIN */
         .login-screen {
             position: fixed;
             inset: 0;
@@ -1219,7 +1334,6 @@
             font-size: 0.9rem;
             margin-bottom: 28px;
         }
-
         .login-field {
             text-align: left;
             margin-bottom: 16px;
@@ -1247,7 +1361,6 @@
             border-color: transparent;
             background: white;
         }
-
         .login-error {
             background: #fef2f2;
             color: #b91c1c;
@@ -1259,7 +1372,6 @@
             display: none;
         }
         .login-error.show { display: block; }
-
         .login-btn {
             width: 100%;
             padding: 14px;
@@ -1276,7 +1388,6 @@
         .login-btn:hover { background: #2563eb; transform: scale(1.01); }
         .login-btn:active { transform: scale(0.98); }
 
-        /* USER BADGE */
         .user-badge {
             display: flex;
             align-items: center;
@@ -1292,7 +1403,6 @@
             transition: 0.15s;
         }
         .user-badge:hover { background: #e2e8f0; }
-
         .user-avatar {
             width: 28px;
             height: 28px;
@@ -1306,7 +1416,6 @@
             font-weight: 800;
             text-transform: uppercase;
         }
-
         .user-role-tag {
             font-size: 0.65rem;
             background: #dbeafe;
@@ -1346,20 +1455,19 @@
             .btn-icon { padding: 8px 12px; }
             .table-grid { grid-template-columns: repeat(3, 1fr); }
             .user-badge span:not(.user-role-tag) { display: none; }
+            .cloud-badge span:not(.cloud-dot) { display: none; }
         }
     </style>
 </head>
 <body>
 
-<!-- ========== LOGIN SCREEN ========== -->
+<!-- LOGIN -->
 <div class="login-screen" id="loginScreen">
     <div class="login-card">
         <div class="login-logo">🍽️</div>
         <h1>Restaurant POS</h1>
         <p class="subtitle">Sign in to continue</p>
-
         <div class="login-error" id="loginError">Invalid username or password</div>
-
         <form id="loginForm" autocomplete="off">
             <div class="login-field">
                 <label>Username</label>
@@ -1374,13 +1482,17 @@
     </div>
 </div>
 
-<!-- ========== POS APP ========== -->
+<!-- POS APP -->
 <div class="pos-app">
     <div class="top-bar">
         <div class="logo">
-            <span>🍽️</span> POS <span style="font-weight:400;font-size:0.8rem;color:#64748b;">MMK</span>
+            <span>🍽️</span> Myitkyinar Thu <span style="font-weight:400;font-size:0.8rem;color:#64748b;"> </span>
         </div>
         <div class="top-actions">
+            <div class="cloud-badge cloud-off" id="cloudBadge" title="Cloud upload status — tap to retry pending">
+                <span class="cloud-dot"></span>
+                <span id="cloudBadgeText">Cloud off</span>
+            </div>
             <button class="btn-icon" id="heldOrdersBtn" title="Held Orders">⏸️ <span>Held</span> <span class="badge" id="heldCountBadge">0</span></button>
             <button class="btn-icon" id="historyBtn" title="Sales History">📊 <span>History</span></button>
             <button class="btn-icon" id="analyticsBtn" title="Sales Analytics">📈 <span>Analytics</span></button>
@@ -1441,7 +1553,7 @@
     </div>
 </div>
 
-<!-- TABLE SELECTION MODAL -->
+<!-- TABLE SELECT MODAL -->
 <div class="modal-overlay" id="tableSelectModal">
     <div class="modal-card" style="max-width:480px;">
         <h2>🪑 Select Table</h2>
@@ -1461,7 +1573,6 @@
             <div class="label">Amount due</div>
             <div class="value" id="paymentAmountDue">0 Ks</div>
         </div>
-
         <h3>Payment method</h3>
         <div class="payment-methods">
             <div class="payment-method" data-method="cash">
@@ -1473,7 +1584,6 @@
                 <span class="payment-method-label">Card</span>
             </div>
         </div>
-
         <div id="cashSection" style="display:none;">
             <h3>Cash received (MMK)</h3>
             <div class="setting-group">
@@ -1485,13 +1595,11 @@
                 <div class="value" id="changeValue">0 Ks</div>
             </div>
         </div>
-
         <div id="cardSection" style="display:none;">
             <div style="background:#dbeafe;border:1px solid #93c5fd;border-radius:14px;padding:16px;text-align:center;color:#1e40af;font-weight:500;font-size:0.9rem;">
                 💳 Process payment on card terminal
             </div>
         </div>
-
         <div class="modal-actions" style="margin-top:20px;">
             <button class="btn-cancel" id="cancelPayment">Cancel</button>
             <button class="btn-save" id="confirmPayment" disabled>Confirm Payment</button>
@@ -1499,7 +1607,7 @@
     </div>
 </div>
 
-<!-- SETTINGS MODAL (with Table Count + User Management + BACKUP) -->
+<!-- SETTINGS MODAL -->
 <div class="modal-overlay" id="settingsModal">
     <div class="modal-card wide">
         <h2>⚙️ Settings</h2>
@@ -1517,49 +1625,88 @@
         <div class="setting-group">
             <label>Number of Tables (1–50)</label>
             <input type="number" id="tableCountInput" value="10" min="1" max="50" step="1">
-            <p style="font-size:0.75rem;color:#64748b;margin-top:4px;">If you reduce this, held orders on removed tables will be lost.</p>
+            <p class="hint">If you reduce this, held orders on removed tables will be lost.</p>
         </div>
 
-        <!-- ========== BACKUP SECTION ========== -->
+        <!-- CLOUD UPLOAD -->
+        <h3 style="margin-top:24px;border-top:1px solid #e2e8f0;padding-top:20px;">☁️ Cloud Upload (Google Sheets)</h3>
+        <p class="hint" style="margin-bottom:12px;">
+            Upload sales to a shared Google Sheet so the owner can see all shops combined. Each shop keeps its own menu, users, and settings locally.
+        </p>
+
+        <div class="setting-group">
+            <label>Shop Name</label>
+            <input type="text" id="cloudShopName" placeholder="e.g. Shop 1" value="">
+            <p class="hint">Must match the AllowedShops list in your Sheet's Config tab. Case-sensitive.</p>
+        </div>
+
+        <div class="setting-group">
+            <label>Upload URL</label>
+            <input type="text" id="cloudUrl" placeholder="https://script.google.com/macros/s/.../exec" value="">
+            <p class="hint">The Web App URL from your Apps Script deployment.</p>
+        </div>
+
+        <div class="setting-group">
+            <label>Shared Key</label>
+            <input type="text" id="cloudKey" placeholder="Your secret key" value="">
+            <p class="hint">Same as SharedKey in your Sheet's Config tab.</p>
+        </div>
+
+        <button class="test-btn" id="cloudTestBtn" type="button">🔌 Test Connection</button>
+        <div class="test-result" id="cloudTestResult"></div>
+
+        <div class="cloud-toggle-row" style="margin-top:12px;">
+            <div class="cloud-toggle-label">
+                <strong>Enable Cloud Upload</strong>
+                <span>When ON, sales are uploaded to the Sheet in the background.</span>
+            </div>
+            <div class="toggle-switch" id="cloudEnabledToggle"></div>
+        </div>
+
+        <button class="btn-secondary" id="openSheetBtn" style="width:100%;margin-top:10px;" type="button">
+            📊 Open Google Sheet ↗️
+        </button>
+        <p class="hint" style="margin-top:6px;">Save settings first if you've changed the URL. This opens the Sheet in a new tab.</p>
+
+        <!-- BACKUP -->
         <h3 style="margin-top:24px;border-top:1px solid #e2e8f0;padding-top:20px;">💾 Backup & Restore</h3>
-        <p style="font-size:0.8rem;color:#64748b;margin-bottom:12px;">
-            Export a backup file regularly to protect your data. If you ever lose data (browser cache cleared, new device), import the backup to restore everything.
+        <p class="hint" style="margin-bottom:12px;">
+            Export a backup file regularly to protect your data. Backup includes menu, users, settings, sales, held orders, and any pending uploads.
         </p>
         <div class="backup-grid">
             <button class="backup-btn" id="exportBackupBtn" type="button">
                 <div class="backup-btn-icon">📥</div>
                 <div class="backup-btn-text">
                     <div class="backup-btn-title">Export Backup</div>
-                    <div class="backup-btn-desc">Download all data as a .json file</div>
+                    <div class="backup-btn-desc">Download all data as .json</div>
                 </div>
             </button>
             <button class="backup-btn" id="importBackupBtn" type="button">
                 <div class="backup-btn-icon">📤</div>
                 <div class="backup-btn-text">
                     <div class="backup-btn-title">Import Backup</div>
-                    <div class="backup-btn-desc">Restore data from a backup file</div>
+                    <div class="backup-btn-desc">Restore from a backup file</div>
                 </div>
             </button>
         </div>
         <div class="storage-info">
-            <span>📊 Storage used: <strong id="storageSize">— KB</strong></span>
+            <span>📊 Storage: <strong id="storageSize">— KB</strong></span>
             <span>🍽️ Menu: <strong id="storageMenu">0</strong></span>
             <span>📈 Sales: <strong id="storageSales">0</strong></span>
             <span>⏸️ Held: <strong id="storageHeld">0</strong></span>
+            <span>☁️ Pending: <strong id="storagePending">0</strong></span>
         </div>
         <button class="backup-btn danger" id="resetAllBtn" type="button" style="width:100%;margin-top:10px;">
             <div class="backup-btn-icon">🗑️</div>
             <div class="backup-btn-text">
                 <div class="backup-btn-title">Reset to Factory Defaults</div>
-                <div class="backup-btn-desc">Delete ALL data (menu, sales, users, settings). Cannot be undone!</div>
+                <div class="backup-btn-desc">Delete ALL data. Cannot be undone!</div>
             </div>
         </button>
 
-        <!-- ========== USERS SECTION ========== -->
+        <!-- USERS -->
         <h3 style="margin-top:24px;border-top:1px solid #e2e8f0;padding-top:20px;">👥 User Accounts</h3>
-        <p style="font-size:0.8rem;color:#64748b;margin-bottom:12px;">
-            Manage cashier accounts. You cannot delete your own logged-in account.
-        </p>
+        <p class="hint" style="margin-bottom:12px;">Manage cashier accounts for THIS shop only. Each shop has its own user list.</p>
         <div id="userList"></div>
         <button class="btn-secondary" id="addUserBtn" style="width:100%;margin-top:8px;">+ Add New User</button>
 
@@ -1570,17 +1717,12 @@
     </div>
 </div>
 
-<!-- IMPORT BACKUP CONFIRM MODAL -->
+<!-- IMPORT CONFIRM -->
 <div class="modal-overlay" id="importConfirmModal">
     <div class="modal-card" style="max-width:420px;text-align:center;">
         <h2 style="justify-content:center;">📤 Import Backup?</h2>
         <div id="importPreview" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;text-align:left;font-size:0.85rem;margin:12px 0;line-height:1.7;"></div>
-        <p style="color:#dc2626;font-size:0.85rem;font-weight:600;margin-top:8px;">
-            ⚠️ This will REPLACE all current data.
-        </p>
-        <p style="color:#64748b;font-size:0.8rem;margin-top:4px;">
-            Your current menu, sales, users, and settings will be overwritten. Export a backup first if unsure.
-        </p>
+        <p style="color:#dc2626;font-size:0.85rem;font-weight:600;margin-top:8px;">⚠️ This will REPLACE all current data.</p>
         <div class="modal-actions" style="margin-top:20px;">
             <button class="btn-cancel" id="cancelImport">Cancel</button>
             <button class="btn-save" id="confirmImport" style="background:#dc2626;">Yes, Replace Everything</button>
@@ -1588,23 +1730,12 @@
     </div>
 </div>
 
-<!-- RESET CONFIRM MODAL -->
+<!-- RESET CONFIRM -->
 <div class="modal-overlay" id="resetConfirmModal">
     <div class="modal-card" style="max-width:420px;text-align:center;">
         <h2 style="justify-content:center;">🗑️ Reset Everything?</h2>
-        <p style="color:#dc2626;font-size:0.9rem;font-weight:600;margin-top:12px;">
-            This will permanently delete:
-        </p>
-        <ul style="text-align:left;font-size:0.85rem;color:#475569;margin:12px 0 12px 24px;line-height:1.8;">
-            <li>All menu items</li>
-            <li>All sales history</li>
-            <li>All held orders</li>
-            <li>All user accounts (resets to defaults)</li>
-            <li>All settings</li>
-        </ul>
-        <p style="color:#64748b;font-size:0.8rem;">
-            Type <strong>RESET</strong> below to confirm.
-        </p>
+        <p style="color:#dc2626;font-size:0.9rem;font-weight:600;margin-top:12px;">This will permanently delete everything.</p>
+        <p style="color:#64748b;font-size:0.8rem;margin-top:8px;">Type <strong>RESET</strong> below to confirm.</p>
         <input type="text" id="resetConfirmInput" placeholder="Type RESET here" style="width:100%;padding:12px;border-radius:12px;border:1px solid #cbd5e1;font-size:0.95rem;margin-top:8px;text-align:center;font-weight:700;letter-spacing:2px;">
         <div class="modal-actions" style="margin-top:16px;">
             <button class="btn-cancel" id="cancelReset">Cancel</button>
@@ -1613,7 +1744,7 @@
     </div>
 </div>
 
-<!-- SALES HISTORY MODAL -->
+<!-- HISTORY MODAL -->
 <div class="modal-overlay" id="historyModal">
     <div class="modal-card xwide">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px;">
@@ -1662,9 +1793,7 @@
 <div class="modal-overlay" id="editMenuModal">
     <div class="modal-card xwide">
         <h2>✏️ Edit Menu Items</h2>
-        <p style="color:#64748b;font-size:0.85rem;margin-bottom:12px;">
-            Set discounts and mark items as unavailable when sold out. Unavailable items cannot be added to orders.
-        </p>
+        <p class="hint" style="margin-bottom:12px;font-size:0.85rem;color:#64748b;">Set discounts and mark items as unavailable when sold out.</p>
         <div style="max-height:440px; overflow-y:auto; padding-right:4px;" id="editMenuList"></div>
         <div style="margin-top:12px;">
             <button class="btn-secondary" id="addMenuItemBtn" style="width:100%;">+ Add New Item</button>
@@ -1676,7 +1805,7 @@
     </div>
 </div>
 
-<!-- LOGOUT CONFIRM MODAL -->
+<!-- LOGOUT CONFIRM -->
 <div class="modal-overlay" id="logoutConfirmModal">
     <div class="modal-card" style="max-width:380px;text-align:center;">
         <h2 style="justify-content:center;">👋 Sign Out?</h2>
@@ -1689,34 +1818,33 @@
     </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
     (function() {
         // ==================== STORAGE KEYS ====================
         const STORAGE_KEYS = {
-            MENU: 'pos_mmk_menu_v7',
-            SETTINGS: 'pos_mmk_settings_v7',
-            HISTORY: 'pos_mmk_history_v7',
-            HELD: 'pos_mmk_held_v7',
-            NEXT_HELD_ID: 'pos_mmk_next_held_id_v7',
-            CURRENT_TABLE: 'pos_mmk_current_table_v7',
-            HIDE_UNAVAILABLE: 'pos_mmk_hide_unavail_v7',
-            SESSION: 'pos_mmk_session_v7',
-            USERS: 'pos_mmk_users_v7'
+            MENU: 'pos_mmk_menu_v8',
+            SETTINGS: 'pos_mmk_settings_v8',
+            HISTORY: 'pos_mmk_history_v8',
+            HELD: 'pos_mmk_held_v8',
+            NEXT_HELD_ID: 'pos_mmk_next_held_id_v8',
+            CURRENT_TABLE: 'pos_mmk_current_table_v8',
+            HIDE_UNAVAILABLE: 'pos_mmk_hide_unavail_v8',
+            SESSION: 'pos_mmk_session_v8',
+            USERS: 'pos_mmk_users_v8',
+            CLOUD: 'pos_mmk_cloud_v8',
+            PENDING: 'pos_mmk_pending_v8'
         };
 
         const BACKUP_FORMAT = 'pos-mmk-backup';
-        const BACKUP_VERSION = 1;
+        const BACKUP_VERSION = 2;
 
-        // ==================== DEFAULT USERS ====================
         const DEFAULT_USERS = [
             { username: 'admin',   password: 'admin123',   displayName: 'Administrator', role: 'admin'   },
             { username: 'cashier', password: 'cashier123', displayName: 'Cashier',       role: 'cashier' }
         ];
 
-        // ==================== DEFAULT DATA ====================
         const DEFAULT_MENU = [
             { id: 1, name: 'Mohinga', price: 2500, category: 'Main', discountAmount: 0, discountPercent: 0, available: true },
             { id: 2, name: 'Shan Noodles', price: 3000, category: 'Main', discountAmount: 0, discountPercent: 0, available: true },
@@ -1741,6 +1869,14 @@
             taxRate: 5,
             restaurantName: 'Restaurant POS',
             tableCount: 10
+        };
+
+        const DEFAULT_CLOUD = {
+            enabled: false,
+            shopName: '',
+            url: '',
+            key: '',
+            sheetUrl: ''
         };
 
         const DEFAULT_CATEGORIES = ['Main', 'Salad', 'Sides', 'Snacks', 'Drinks', 'Dessert', 'Other'];
@@ -1775,6 +1911,8 @@
         let currentTable = loadFromStorage(STORAGE_KEYS.CURRENT_TABLE, 1);
         let hideUnavailable = loadFromStorage(STORAGE_KEYS.HIDE_UNAVAILABLE, false);
         let USERS = loadFromStorage(STORAGE_KEYS.USERS, DEFAULT_USERS);
+        let cloud = loadFromStorage(STORAGE_KEYS.CLOUD, DEFAULT_CLOUD);
+        let pendingUploads = loadFromStorage(STORAGE_KEYS.PENDING, []);
         let order = [];
         let currentCategory = 'All';
         let toastTimeout = null;
@@ -1784,6 +1922,8 @@
         let selectedPaymentMethod = null;
         let currentUser = null;
         let pendingImportData = null;
+        let isSyncing = false;
+        let lastSyncError = '';
 
         MENU_ITEMS = MENU_ITEMS.map(item => ({
             ...item,
@@ -1800,6 +1940,9 @@
         if (!USERS.some(u => u.role === 'admin')) {
             USERS.unshift({ username: 'admin', password: 'admin123', displayName: 'Administrator', role: 'admin' });
         }
+
+        cloud = { ...DEFAULT_CLOUD, ...cloud };
+        if (!Array.isArray(pendingUploads)) pendingUploads = [];
 
         // ==================== DOM REFS ====================
         const menuGrid = document.getElementById('menuGrid');
@@ -1824,6 +1967,8 @@
         const heldOrdersBtn = document.getElementById('heldOrdersBtn');
         const heldCountBadge = document.getElementById('heldCountBadge');
         const editMenuBtn = document.getElementById('editMenuBtn');
+        const cloudBadge = document.getElementById('cloudBadge');
+        const cloudBadgeText = document.getElementById('cloudBadgeText');
 
         const tableSelectModal = document.getElementById('tableSelectModal');
         const paymentModal = document.getElementById('paymentModal');
@@ -1857,7 +2002,14 @@
         const saveSettingsBtn = document.getElementById('saveSettings');
         const cancelSettingsBtn = document.getElementById('cancelSettings');
 
-        // Backup DOM
+        const cloudShopName = document.getElementById('cloudShopName');
+        const cloudUrl = document.getElementById('cloudUrl');
+        const cloudKey = document.getElementById('cloudKey');
+        const cloudTestBtn = document.getElementById('cloudTestBtn');
+        const cloudTestResult = document.getElementById('cloudTestResult');
+        const cloudEnabledToggle = document.getElementById('cloudEnabledToggle');
+        const openSheetBtn = document.getElementById('openSheetBtn');
+
         const exportBackupBtn = document.getElementById('exportBackupBtn');
         const importBackupBtn = document.getElementById('importBackupBtn');
         const resetAllBtn = document.getElementById('resetAllBtn');
@@ -1865,6 +2017,7 @@
         const storageMenu = document.getElementById('storageMenu');
         const storageSales = document.getElementById('storageSales');
         const storageHeld = document.getElementById('storageHeld');
+        const storagePending = document.getElementById('storagePending');
         const importPreview = document.getElementById('importPreview');
         const cancelImportBtn = document.getElementById('cancelImport');
         const confirmImportBtn = document.getElementById('confirmImport');
@@ -1890,7 +2043,6 @@
 
         const toast = document.getElementById('toast');
 
-        // Auth DOM
         const loginScreen = document.getElementById('loginScreen');
         const loginForm = document.getElementById('loginForm');
         const loginUsername = document.getElementById('loginUsername');
@@ -1931,6 +2083,162 @@
             if (menuItem.discountPercent > 0) price -= price * (menuItem.discountPercent / 100);
             return Math.max(0, Math.round(price));
         }
+
+        // ==================== CLOUD UPLOAD ====================
+        function isCloudConfigured() {
+            return !!(cloud.shopName && cloud.url && cloud.key);
+        }
+
+        function updateCloudBadge() {
+            cloudBadge.classList.remove('cloud-synced', 'cloud-pending', 'cloud-error', 'cloud-syncing', 'cloud-off');
+
+            if (!cloud.enabled || !isCloudConfigured()) {
+                cloudBadge.classList.add('cloud-off');
+                cloudBadgeText.textContent = 'Cloud off';
+                return;
+            }
+
+            if (isSyncing) {
+                cloudBadge.classList.add('cloud-syncing');
+                cloudBadgeText.textContent = 'Syncing...';
+                return;
+            }
+
+            const count = pendingUploads.length;
+            if (count === 0) {
+                cloudBadge.classList.add('cloud-synced');
+                cloudBadgeText.textContent = 'Synced';
+            } else if (lastSyncError) {
+                cloudBadge.classList.add('cloud-error');
+                cloudBadgeText.textContent = `${count} pending · error`;
+            } else {
+                cloudBadge.classList.add('cloud-pending');
+                cloudBadgeText.textContent = `${count} pending`;
+            }
+        }
+
+        async function tryUploadSale(saleId) {
+            // Find the pending sale
+            const idx = pendingUploads.findIndex(p => p.saleId === saleId);
+            if (idx === -1) return { success: false, error: 'Not in queue' };
+
+            const p = pendingUploads[idx];
+
+            try {
+                const response = await fetch(cloud.url, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        key: cloud.key,
+                        shop: cloud.shopName,
+                        action: 'addSale',
+                        sale: p.sale
+                    })
+                });
+
+                const text = await response.text();
+                let data;
+                try { data = JSON.parse(text); }
+                catch (e) { return { success: false, error: 'Invalid response from server: ' + text.slice(0, 100) }; }
+
+                if (data.success) {
+                    // Mark as uploaded in history
+                    const histIdx = salesHistory.findIndex(s => s.saleId === saleId);
+                    if (histIdx !== -1) {
+                        salesHistory[histIdx].uploaded = true;
+                        salesHistory[histIdx].uploadedAt = new Date().toISOString();
+                        saveToStorage(STORAGE_KEYS.HISTORY, salesHistory);
+                    }
+                    // Remove from pending
+                    pendingUploads.splice(idx, 1);
+                    saveToStorage(STORAGE_KEYS.PENDING, pendingUploads);
+                    return { success: true };
+                } else {
+                    return { success: false, error: data.error || 'Server rejected' };
+                }
+            } catch (err) {
+                return { success: false, error: err.message || 'Network error' };
+            }
+        }
+
+        async function syncPendingUploads(manual = false) {
+            if (!cloud.enabled) {
+                if (manual) showToast('Cloud upload is disabled', 'warn');
+                return;
+            }
+            if (!isCloudConfigured()) {
+                if (manual) showToast('Cloud not configured. Set it up in Settings.', 'error');
+                return;
+            }
+            if (isSyncing) {
+                if (manual) showToast('Sync already in progress', 'warn');
+                return;
+            }
+            if (pendingUploads.length === 0) {
+                if (manual) showToast('All sales are synced ✅', 'success');
+                return;
+            }
+
+            isSyncing = true;
+            lastSyncError = '';
+            updateCloudBadge();
+
+            const total = pendingUploads.length;
+            let successCount = 0;
+            let failCount = 0;
+            let lastError = '';
+
+            // Copy list because we'll modify the original during iteration
+            const saleIds = pendingUploads.map(p => p.saleId);
+
+            for (const saleId of saleIds) {
+                const result = await tryUploadSale(saleId);
+                if (result.success) {
+                    successCount++;
+                    updateCloudBadge();
+                } else {
+                    failCount++;
+                    lastError = result.error || 'Unknown error';
+                    // Stop trying if network error (probably offline)
+                    if (failCount >= 3) break;
+                }
+            }
+
+            isSyncing = false;
+            if (failCount > 0) {
+                lastSyncError = lastError;
+            }
+            updateCloudBadge();
+
+            if (manual) {
+                if (failCount === 0) {
+                    showToast(`✅ Synced ${successCount} sale(s)`, 'success');
+                } else {
+                    showToast(`Uploaded ${successCount}, failed ${failCount}: ${lastError}`, 'error', 4000);
+                }
+            }
+        }
+
+        function queueSaleForUpload(sale) {
+            if (!cloud.enabled || !isCloudConfigured()) return;
+            pendingUploads.push({
+                saleId: sale.saleId,
+                sale: sale,
+                queuedAt: new Date().toISOString()
+            });
+            saveToStorage(STORAGE_KEYS.PENDING, pendingUploads);
+            updateCloudBadge();
+            // Fire and forget
+            syncPendingUploads(false);
+        }
+
+        // Auto-retry every 60 minutes
+        setInterval(() => {
+            if (cloud.enabled && isCloudConfigured() && pendingUploads.length > 0) {
+                syncPendingUploads(false);
+            }
+        }, 60 * 60 * 1000);
 
         // ==================== AUTH ====================
         function saveSession(user) {
@@ -2159,12 +2467,10 @@
         function addToOrder(menuItemId) {
             const menuItem = MENU_ITEMS.find(m => m.id === menuItemId);
             if (!menuItem) return;
-
             if (!menuItem.available) {
                 showToast(`"${menuItem.name}" is not available`, 'error');
                 return;
             }
-
             const effectivePrice = getEffectivePrice(menuItem);
             const existing = order.find(l => l.id === menuItemId);
             if (existing) existing.quantity += 1;
@@ -2299,7 +2605,7 @@
             if (order.length === 0) return;
             const unavailableLines = order.filter(l => l.unavailable);
             if (unavailableLines.length > 0) {
-                showToast(`Remove unavailable items first: ${unavailableLines.map(l => l.name).join(', ')}`, 'error');
+                showToast(`Remove unavailable items first`, 'error');
                 return;
             }
             const t = calculateTotals();
@@ -2344,6 +2650,11 @@
             }
         }
 
+        function generateSaleId() {
+            const shop = (cloud.shopName || 'POS').replace(/\s+/g, '');
+            return `${shop}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+        }
+
         function confirmPayment() {
             if (!selectedPaymentMethod || order.length === 0) return;
             const t = calculateTotals();
@@ -2360,7 +2671,9 @@
                 change = cashReceived - t.total;
             }
 
-            salesHistory.push({
+            const saleId = generateSaleId();
+            const saleRecord = {
+                saleId: saleId,
                 timestamp: now.toISOString(),
                 displayTime: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 dateKey: now.toISOString().slice(0, 10),
@@ -2379,10 +2692,16 @@
                     originalPrice: l.originalPrice,
                     category: MENU_ITEMS.find(m => m.id === l.id)?.category || 'Other'
                 })),
-                total: t.total
-            });
+                subtotal: t.originalSubtotal,
+                discount: t.itemDiscounts,
+                tax: t.tax,
+                total: t.total,
+                uploaded: false
+            };
 
+            salesHistory.push(saleRecord);
             saveToStorage(STORAGE_KEYS.HISTORY, salesHistory);
+
             printReceipt(selectedPaymentMethod, cashReceived, change);
 
             if (selectedPaymentMethod === 'cash') {
@@ -2393,6 +2712,12 @@
 
             paymentModal.classList.remove('show');
             order = [];
+
+            // Queue for cloud upload
+            if (cloud.enabled && isCloudConfigured()) {
+                queueSaleForUpload(saleRecord);
+            }
+
             renderOrder();
         }
 
@@ -2553,6 +2878,11 @@
                             const itemStr = s.items.map(i => `${i.qty}x ${i.name}`).join(', ');
                             const short = itemStr.length > 30 ? itemStr.slice(0, 30) + '…' : itemStr;
                             const payTag = s.paymentMethod ? `<span class="payment-tag ${s.paymentMethod}">${s.paymentMethod}</span>` : '—';
+                            const uploadTag = cloud.enabled && isCloudConfigured()
+                                ? (s.uploaded
+                                    ? `<span class="upload-tag synced">☁️</span>`
+                                    : `<span class="upload-tag pending">⏳</span>`)
+                                : '';
                             const cashInfo = (s.paymentMethod === 'cash' && s.cashReceived)
                                 ? `<div style="font-size:0.7rem;color:#64748b;margin-top:2px;">Recv ${formatMoney(s.cashReceived)} · Chg ${formatMoney(s.change)}</div>`
                                 : '';
@@ -2561,7 +2891,7 @@
                                     <td style="white-space:nowrap;">${s.displayTime}</td>
                                     <td><strong>${s.table || '—'}</strong></td>
                                     <td style="font-size:0.8rem;color:#64748b;">${escapeHtml(s.cashier || '—')}</td>
-                                    <td style="font-size:0.8rem;">${short}</td>
+                                    <td style="font-size:0.8rem;">${short} ${uploadTag}</td>
                                     <td>${payTag}${cashInfo}</td>
                                     <td style="font-weight:600;color:#3b82f6;text-align:right;white-space:nowrap;">${formatMoney(s.total)}</td>
                                 </tr>
@@ -2592,10 +2922,10 @@
             }
             const rows = [];
             rows.push([
-                'Date', 'Time', 'Table', 'Cashier', 'Payment Method',
+                'SaleID', 'Date', 'Time', 'Table', 'Cashier', 'Payment Method',
                 'Item', 'Category', 'Qty', 'Unit Price (Ks)', 'Original Price (Ks)',
                 'Discount (Ks)', 'Line Total (Ks)',
-                'Cash Received (Ks)', 'Change (Ks)', 'Order Total (Ks)'
+                'Cash Received (Ks)', 'Change (Ks)', 'Order Total (Ks)', 'Uploaded'
             ]);
             const sorted = [...salesHistory].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
             sorted.forEach(sale => {
@@ -2607,10 +2937,11 @@
                     const originalLineTotal = (item.originalPrice || item.price) * item.qty;
                     const disc = originalLineTotal - lineTotal;
                     rows.push([
-                        dateStr, timeStr, sale.table || '', sale.cashier || '',
+                        sale.saleId || '', dateStr, timeStr, sale.table || '', sale.cashier || '',
                         sale.paymentMethod || '', item.name, item.category || 'Other',
                         item.qty, item.price, item.originalPrice || item.price,
-                        disc, lineTotal, sale.cashReceived || 0, sale.change || 0, sale.total
+                        disc, lineTotal, sale.cashReceived || 0, sale.change || 0, sale.total,
+                        sale.uploaded ? 'yes' : 'no'
                     ]);
                 });
             });
@@ -2648,6 +2979,7 @@
                 storageMenu.textContent = MENU_ITEMS.length;
                 storageSales.textContent = salesHistory.length;
                 storageHeld.textContent = heldOrders.length;
+                storagePending.textContent = pendingUploads.length;
             } catch (e) {
                 storageSize.textContent = '—';
             }
@@ -2667,7 +2999,9 @@
                     nextHeldId: nextHeldId,
                     currentTable: currentTable,
                     hideUnavailable: hideUnavailable,
-                    users: USERS
+                    users: USERS,
+                    cloud: cloud,
+                    pendingUploads: pendingUploads
                 }
             };
 
@@ -2700,9 +3034,7 @@
                         showToast('Backup file is missing data', 'error');
                         return;
                     }
-                    // Store for confirmation step
                     pendingImportData = backup;
-                    // Show preview
                     const d = backup.data;
                     const exportedAt = backup.exportedAt ? new Date(backup.exportedAt).toLocaleString() : '—';
                     importPreview.innerHTML = `
@@ -2713,6 +3045,7 @@
                         <div>📈 Sales records: <strong>${(d.salesHistory || []).length}</strong></div>
                         <div>⏸️ Held orders: <strong>${(d.heldOrders || []).length}</strong></div>
                         <div>👥 Users: <strong>${(d.users || []).length}</strong></div>
+                        <div>☁️ Pending uploads: <strong>${(d.pendingUploads || []).length}</strong></div>
                         <div>🏪 Restaurant: <strong>${escapeHtml(d.settings?.restaurantName || '—')}</strong></div>
                         <div>📊 Tax rate: <strong>${d.settings?.taxRate ?? '—'}%</strong></div>
                         <div>🪑 Tables: <strong>${d.settings?.tableCount ?? '—'}</strong></div>
@@ -2731,7 +3064,6 @@
             if (!pendingImportData) return;
             const d = pendingImportData.data;
 
-            // Apply all data
             if (Array.isArray(d.menu)) MENU_ITEMS = d.menu.map(item => ({
                 ...item,
                 discountAmount: item.discountAmount || 0,
@@ -2745,8 +3077,9 @@
             if (typeof d.currentTable === 'number') currentTable = d.currentTable;
             if (typeof d.hideUnavailable === 'boolean') hideUnavailable = d.hideUnavailable;
             if (Array.isArray(d.users) && d.users.length > 0) USERS = d.users;
+            if (d.cloud) cloud = { ...DEFAULT_CLOUD, ...d.cloud };
+            if (Array.isArray(d.pendingUploads)) pendingUploads = d.pendingUploads;
 
-            // Save all
             saveToStorage(STORAGE_KEYS.MENU, MENU_ITEMS);
             saveToStorage(STORAGE_KEYS.SETTINGS, settings);
             saveToStorage(STORAGE_KEYS.HISTORY, salesHistory);
@@ -2755,25 +3088,24 @@
             saveToStorage(STORAGE_KEYS.CURRENT_TABLE, currentTable);
             saveToStorage(STORAGE_KEYS.HIDE_UNAVAILABLE, hideUnavailable);
             saveToStorage(STORAGE_KEYS.USERS, USERS);
+            saveToStorage(STORAGE_KEYS.CLOUD, cloud);
+            saveToStorage(STORAGE_KEYS.PENDING, pendingUploads);
 
-            // Reset UI state
             order = [];
             currentCategory = 'All';
             pendingImportData = null;
 
-            // Re-render everything
             renderCategories();
             renderMenuItems();
             renderOrder();
             updateHeldBadge();
+            updateCloudBadge();
             currentTableLabel.textContent = `Table ${currentTable}`;
             hideUnavailableToggle.checked = hideUnavailable;
 
-            // Close all modals
             importConfirmModal.classList.remove('show');
             settingsModal.classList.remove('show');
 
-            // Re-check current user (in case their account changed)
             if (currentUser) {
                 const updated = USERS.find(u => u.username === currentUser.username);
                 if (updated) {
@@ -2781,14 +3113,13 @@
                     updateUserBadge(updated);
                     applyRolePermissions(updated.role);
                 } else {
-                    // Current user no longer exists — force logout
                     showToast('Your account is not in the backup. Please sign in again.', 'warn', 4000);
                     handleLogout();
                     return;
                 }
             }
 
-            showToast(`✅ Backup restored: ${MENU_ITEMS.length} items, ${salesHistory.length} sales`, 'success', 4000);
+            showToast(`✅ Backup restored`, 'success', 4000);
         }
 
         function openResetConfirm() {
@@ -2799,15 +3130,69 @@
         }
 
         function applyReset() {
-            // Clear all storage
             Object.values(STORAGE_KEYS).forEach(k => {
                 try { localStorage.removeItem(k); } catch (e) {}
             });
             try { sessionStorage.removeItem(STORAGE_KEYS.SESSION); } catch (e) {}
-
-            // Reload to start fresh
             showToast('🔄 Resetting...', 'success');
             setTimeout(() => window.location.reload(), 800);
+        }
+
+        // ==================== CLOUD TEST ====================
+        async function testCloudConnection() {
+            const url = cloudUrl.value.trim();
+            const key = cloudKey.value.trim();
+            const shop = cloudShopName.value.trim();
+
+            if (!url || !key || !shop) {
+                cloudTestResult.className = 'test-result show fail';
+                cloudTestResult.textContent = '❌ Please fill in Shop Name, URL, and Shared Key first.';
+                return;
+            }
+
+            cloudTestBtn.disabled = true;
+            cloudTestBtn.textContent = '⏳ Testing...';
+            cloudTestResult.className = 'test-result';
+            cloudTestResult.textContent = '';
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        key: key,
+                        shop: shop,
+                        action: 'ping'
+                    })
+                });
+
+                const text = await response.text();
+                let data;
+                try { data = JSON.parse(text); }
+                catch (e) {
+                    cloudTestResult.className = 'test-result show fail';
+                    cloudTestResult.textContent = '❌ Invalid response from server. Check the URL.';
+                    return;
+                }
+
+                if (data.success) {
+                    cloudTestResult.className = 'test-result show ok';
+                    cloudTestResult.innerHTML = `✅ Connected!<br>
+                        Restaurant: <strong>${escapeHtml(data.restaurant || '—')}</strong><br>
+                        Allowed shops: <strong>${(data.allowedShops || []).join(', ') || '—'}</strong><br>
+                        Your shop: <strong>${escapeHtml(shop)}</strong> ${(data.allowedShops || []).includes(shop) ? '✅' : '❌ NOT IN LIST'}`;
+                } else {
+                    cloudTestResult.className = 'test-result show fail';
+                    cloudTestResult.textContent = '❌ ' + (data.error || 'Unknown error');
+                }
+            } catch (err) {
+                cloudTestResult.className = 'test-result show fail';
+                cloudTestResult.textContent = '❌ Network error: ' + (err.message || err);
+            } finally {
+                cloudTestBtn.disabled = false;
+                cloudTestBtn.textContent = '🔌 Test Connection';
+            }
         }
 
         // ==================== ANALYTICS ====================
@@ -2879,7 +3264,7 @@
 
         function renderAnalytics() {
             if (salesHistory.length === 0) {
-                analyticsContent.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:30px;">No sales data yet. Complete some orders to see analytics.</p>';
+                analyticsContent.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:30px;">No sales data yet.</p>';
                 return;
             }
             const a = computeAnalytics();
@@ -2953,7 +3338,7 @@
                                     const pct = (d.total / maxDailyTotal) * 100;
                                     const shortDate = new Date(d.dateKey).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
                                     return `
-                                        <div class="bar-wrapper" title="${d.dateDisplay}: ${formatMoney(d.total)} (${d.orders} orders)">
+                                        <div class="bar-wrapper" title="${d.dateDisplay}: ${formatMoney(d.total)}">
                                             <div class="bar-value">${Math.round(d.total).toLocaleString()}</div>
                                             <div class="bar" style="height:${pct}%"></div>
                                             <div class="bar-label">${shortDate}</div>
@@ -2970,7 +3355,7 @@
                                 ${a.monthlySales.map(m => {
                                     const pct = (m.total / maxMonthlyTotal) * 100;
                                     return `
-                                        <div class="bar-wrapper" title="${m.monthDisplay}: ${formatMoney(m.total)} (${m.orders} orders)">
+                                        <div class="bar-wrapper" title="${m.monthDisplay}: ${formatMoney(m.total)}">
                                             <div class="bar-value">${Math.round(m.total).toLocaleString()}</div>
                                             <div class="bar" style="height:${pct}%;background:linear-gradient(180deg,#7c3aed 0%,#6d28d9 100%);"></div>
                                             <div class="bar-label">${m.monthDisplay}</div>
@@ -2986,7 +3371,7 @@
                             ${a.peakHours.map(h => {
                                 const pct = (h.orders / maxHourOrders) * 100;
                                 return `
-                                    <div class="bar-wrapper" title="${hourLabel(h.hour)}: ${h.orders} orders · ${formatMoney(h.total)}">
+                                    <div class="bar-wrapper" title="${hourLabel(h.hour)}: ${h.orders} orders">
                                         <div class="bar-value">${h.orders > 0 ? h.orders : ''}</div>
                                         <div class="bar" style="height:${pct}%;background:linear-gradient(180deg,#059669 0%,#047857 100%);min-height:${h.orders > 0 ? 4 : 0}px;"></div>
                                         <div class="bar-label">${hourLabel(h.hour)}</div>
@@ -3074,6 +3459,14 @@
             taxRateInput.value = settings.taxRate;
             restaurantNameInput.value = settings.restaurantName || 'Restaurant POS';
             tableCountInput.value = settings.tableCount || 10;
+
+            cloudShopName.value = cloud.shopName || '';
+            cloudUrl.value = cloud.url || '';
+            cloudKey.value = cloud.key || '';
+            cloudEnabledToggle.classList.toggle('on', !!cloud.enabled);
+            cloudTestResult.className = 'test-result';
+            cloudTestResult.textContent = '';
+
             tempUsers = JSON.parse(JSON.stringify(USERS));
             renderUserList();
             updateStorageInfo();
@@ -3108,13 +3501,17 @@
                 newUsers.push({ username, displayName, password, role });
             });
 
-            if (hasError || newUsers.length === 0) {
-                showToast('Please fix user errors', 'error');
-                return;
-            }
+            if (hasError || newUsers.length === 0) { showToast('Please fix user errors', 'error'); return; }
+            if (!newUsers.some(u => u.role === 'admin')) { showToast('At least one admin required', 'error'); return; }
 
-            if (!newUsers.some(u => u.role === 'admin')) {
-                showToast('At least one admin required', 'error');
+            // Cloud
+            cloud.shopName = cloudShopName.value.trim();
+            cloud.url = cloudUrl.value.trim();
+            cloud.key = cloudKey.value.trim();
+            cloud.enabled = cloudEnabledToggle.classList.contains('on');
+
+            if (cloud.enabled && (!cloud.shopName || !cloud.url || !cloud.key)) {
+                showToast('Cloud enabled but Shop Name/URL/Key missing', 'error');
                 return;
             }
 
@@ -3125,7 +3522,7 @@
                 if (heldOrders.length < before) {
                     saveToStorage(STORAGE_KEYS.HELD, heldOrders);
                     updateHeldBadge();
-                    showToast(`${before - heldOrders.length} held order(s) removed (table exceeded new limit)`, 'warn');
+                    showToast(`${before - heldOrders.length} held order(s) removed`, 'warn');
                 }
                 if (parseInt(currentTable, 10) > tc) {
                     currentTable = 1;
@@ -3141,6 +3538,7 @@
 
             saveToStorage(STORAGE_KEYS.SETTINGS, settings);
             saveToStorage(STORAGE_KEYS.USERS, USERS);
+            saveToStorage(STORAGE_KEYS.CLOUD, cloud);
 
             if (currentUser) {
                 const updated = USERS.find(u => u.username === currentUser.username);
@@ -3154,7 +3552,13 @@
 
             settingsModal.classList.remove('show');
             renderOrder();
+            updateCloudBadge();
             showToast('Settings saved', 'success');
+
+            // Fire a sync attempt in case we just enabled cloud
+            if (cloud.enabled && pendingUploads.length > 0) {
+                setTimeout(() => syncPendingUploads(false), 1000);
+            }
         }
 
         // ==================== EDIT MENU ====================
@@ -3249,7 +3653,6 @@
         }
 
         // ==================== EVENT LISTENERS ====================
-        // Auth
         loginForm.addEventListener('submit', handleLogin);
         userBadge.addEventListener('click', () => logoutConfirmModal.classList.add('show'));
         cancelLogoutBtn.addEventListener('click', () => logoutConfirmModal.classList.remove('show'));
@@ -3258,7 +3661,19 @@
             if (e.target === logoutConfirmModal) logoutConfirmModal.classList.remove('show');
         });
 
-        // Menu
+        // Cloud badge click — retry
+        cloudBadge.addEventListener('click', () => {
+            if (!cloud.enabled || !isCloudConfigured()) {
+                showToast('Cloud not configured. Open Settings to set up.', 'warn');
+                return;
+            }
+            if (pendingUploads.length === 0) {
+                showToast('All sales are synced ✅', 'success');
+                return;
+            }
+            syncPendingUploads(true);
+        });
+
         categoryTabs.addEventListener('click', e => {
             const b = e.target.closest('.cat-btn');
             if (!b) return;
@@ -3327,7 +3742,6 @@
         });
         confirmPaymentBtn.addEventListener('click', confirmPayment);
 
-        // Settings
         settingsBtn.addEventListener('click', openSettingsModal);
         cancelSettingsBtn.addEventListener('click', () => settingsModal.classList.remove('show'));
         saveSettingsBtn.addEventListener('click', saveSettings);
@@ -3336,12 +3750,7 @@
         });
 
         addUserBtn.addEventListener('click', () => {
-            tempUsers.push({
-                username: '',
-                password: '',
-                displayName: '',
-                role: 'cashier'
-            });
+            tempUsers.push({ username: '', password: '', displayName: '', role: 'cashier' });
             renderUserList();
         });
 
@@ -3363,7 +3772,25 @@
             renderUserList();
         });
 
-        // Backup buttons
+        cloudEnabledToggle.addEventListener('click', () => {
+            cloudEnabledToggle.classList.toggle('on');
+        });
+
+        cloudTestBtn.addEventListener('click', testCloudConnection);
+
+        openSheetBtn.addEventListener('click', () => {
+            if (cloud.sheetUrl) {
+                window.open(cloud.sheetUrl, '_blank');
+            } else {
+                const url = prompt('Paste your Google Sheet URL (the one you view/edit):');
+                if (url && url.trim()) {
+                    cloud.sheetUrl = url.trim();
+                    saveToStorage(STORAGE_KEYS.CLOUD, cloud);
+                    window.open(cloud.sheetUrl, '_blank');
+                }
+            }
+        });
+
         exportBackupBtn.addEventListener('click', exportBackup);
         importBackupBtn.addEventListener('click', () => {
             const input = document.createElement('input');
@@ -3387,7 +3814,6 @@
             }
         });
 
-        // Reset
         resetAllBtn.addEventListener('click', openResetConfirm);
         cancelResetBtn.addEventListener('click', () => resetConfirmModal.classList.remove('show'));
         resetConfirmInput.addEventListener('input', (e) => {
@@ -3398,7 +3824,6 @@
             if (e.target === resetConfirmModal) resetConfirmModal.classList.remove('show');
         });
 
-        // History
         historyBtn.addEventListener('click', () => { renderHistory(); historyModal.classList.add('show'); });
         closeHistoryBtn.addEventListener('click', () => historyModal.classList.remove('show'));
         clearHistoryBtn.addEventListener('click', clearHistory);
@@ -3407,14 +3832,12 @@
             if (e.target === historyModal) historyModal.classList.remove('show');
         });
 
-        // Analytics
         analyticsBtn.addEventListener('click', () => { renderAnalytics(); analyticsModal.classList.add('show'); });
         closeAnalyticsBtn.addEventListener('click', () => analyticsModal.classList.remove('show'));
         analyticsModal.addEventListener('click', e => {
             if (e.target === analyticsModal) analyticsModal.classList.remove('show');
         });
 
-        // Held orders
         heldOrdersBtn.addEventListener('click', () => { renderHeldOrders(); heldOrdersModal.classList.add('show'); });
         closeHeldOrdersBtn.addEventListener('click', () => heldOrdersModal.classList.remove('show'));
         heldOrdersModal.addEventListener('click', e => {
@@ -3426,7 +3849,6 @@
             resumeHeldOrder(parseInt(btn.dataset.resume, 10));
         });
 
-        // Edit menu
         editMenuBtn.addEventListener('click', openEditMenuModal);
         addMenuItemBtn.addEventListener('click', addNewMenuItem);
         cancelEditMenuBtn.addEventListener('click', () => editMenuModal.classList.remove('show'));
@@ -3454,10 +3876,16 @@
             renderMenuItems();
             renderOrder();
             updateHeldBadge();
+            updateCloudBadge();
             heldCountBadge.style.display = heldOrders.length > 0 ? 'inline-block' : 'none';
             currentTableLabel.textContent = `Table ${currentTable}`;
             hideUnavailableToggle.checked = hideUnavailable;
             checkExistingSession();
+
+            // Attempt sync on load (if there are pending)
+            if (cloud.enabled && isCloudConfigured() && pendingUploads.length > 0) {
+                setTimeout(() => syncPendingUploads(false), 2000);
+            }
         }
 
         init();
